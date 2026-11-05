@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d6650">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Sổ Tiền Của Tùng</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap">
+<style>
+/* Layout: one pocket-ledger column. "Hôm nay" is a game screen (daily allowance ring, jar, streak); the rest are tools. Tab bar fixed at the bottom. */
+:root{
+  --bg:#eef3ef; --surface:#ffffff; --sunk:#e3eae5; --ink:#15211d; --muted:#596862; --line:#d3ddd7;
+  --accent:#0d6650; --accent-ink:#ffffff; --accent-soft:#d6ebe3; --accent-2:#0a4f3e;
+  --gold:#a8730f; --gold-soft:#f7ebcf; --gold-ink:#5c3d00;
+  --good:#2b7a47; --warn:#a85f0d; --bad:#ad342c; --good-soft:#dcefe2; --warn-soft:#f6e7d0; --bad-soft:#f6dbd8;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-disp:"Bricolage Grotesque","Be Vietnam Pro",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1512; --surface:#141f1b; --sunk:#1b2823; --ink:#e4ede8; --muted:#94a59d; --line:#26352f;
+  --accent:#4cbc95; --accent-ink:#06140f; --accent-soft:#173a2e; --accent-2:#0f2e25;
+  --gold:#e0b257; --gold-soft:#3a2d12; --gold-ink:#f6dc9f;
+  --good:#62c283; --warn:#e49a3e; --bad:#ea6c61; --good-soft:#15321f; --warn-soft:#3a2a14; --bad-soft:#3d1c19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1512; --surface:#141f1b; --sunk:#1b2823; --ink:#e4ede8; --muted:#94a59d; --line:#26352f;
+  --accent:#4cbc95; --accent-ink:#06140f; --accent-soft:#173a2e; --accent-2:#0f2e25;
+  --gold:#e0b257; --gold-soft:#3a2d12; --gold-ink:#f6dc9f;
+  --good:#62c283; --warn:#e49a3e; --bad:#ea6c61; --good-soft:#15321f; --warn-soft:#3a2a14; --bad-soft:#3d1c19; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:620px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 calc(100px + env(safe-area-inset-bottom,0px))}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px 4px}
+.hello{font-family:var(--f-disp);font-weight:800;font-size:22px;line-height:1.15}
+.hello small{display:block;font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted)}
+.lvchip{display:flex;align-items:center;gap:8px;background:var(--gold-soft);color:var(--gold-ink);border-radius:99px;padding:5px 12px 5px 6px;font-size:13px;font-weight:700;white-space:nowrap}
+.lvchip b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--gold);color:var(--surface);font-size:12px}
+h1,h2,h3{font-family:var(--f-disp);text-wrap:balance;margin:0}
+h2{font-size:20px;font-weight:800}
+h3{font-size:16px;font-weight:700}
+section.view{display:grid;gap:14px;padding-top:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.big{font-family:var(--f-disp);font-weight:800;font-size:30px;line-height:1.1}
+.muted{color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.row>*{min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:370px){.grid2{grid-template-columns:1fr}}
+
+/* Today hero */
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:20px;padding:20px 18px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.hero .ring{width:118px;height:118px;position:relative;flex:none}
+.hero .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hero .ring .c{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.1}
+.hero .ring .c b{font-family:var(--f-disp);font-size:22px;font-weight:800;display:block}
+.hero .ring .c span{font-size:11px;opacity:.85}
+.hero .msg{font-size:14px;opacity:.95}
+.hero .k{font-size:12px;text-transform:uppercase;letter-spacing:.07em;opacity:.8;font-weight:600}
+.hero .left{font-family:var(--f-disp);font-weight:800;font-size:30px;line-height:1.05;margin:2px 0 6px}
+@media (max-width:370px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 10px;text-align:center;display:grid;gap:2px;align-content:start}
+.stat .ico{font-size:20px;line-height:1}
+.stat .v{font-family:var(--f-disp);font-weight:800;font-size:20px;line-height:1.1}
+.stat .t{font-size:11.5px;color:var(--muted);line-height:1.3}
+.stat.gold{background:var(--gold-soft);border-color:transparent}
+.stat.gold .v{color:var(--gold-ink)}
+
+.quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.qbtn{display:flex;justify-content:space-between;align-items:center;gap:6px;border:1px dashed var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;font-weight:600;text-align:left}
+.qbtn span{color:var(--muted);font-weight:500;font-size:13px}
+.qbtn:active{transform:scale(.97)}
+
+/* wish / temptation */
+.wish{background:var(--gold-soft);border-radius:var(--r);padding:16px;display:grid;gap:10px;color:var(--ink)}
+.wish h3{color:var(--gold-ink)}
+.impact{display:grid;gap:6px;font-size:14px}
+.impact div{display:flex;gap:8px;align-items:baseline}
+.impact b{font-family:var(--f-disp);font-size:18px;min-width:64px}
+.wl{display:grid}
+.witem{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.witem:first-child{border-top:0}
+
+/* lists */
+.list{display:grid}
+.item{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .main{flex:1;min-width:0}
+.item .t{font-weight:600;overflow-wrap:anywhere}
+.item .s{font-size:13px;color:var(--muted)}
+.amt{font-weight:600;white-space:nowrap;text-align:right}
+.date{width:46px;flex:none;text-align:center;border-radius:8px;background:var(--sunk);padding:4px 0;line-height:1.15}
+.date b{display:block;font-family:var(--f-disp);font-size:18px}
+.date span{font-size:11px;color:var(--muted)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.chk{width:32px;height:32px;flex:none;border-radius:50%;border:2px solid var(--line);background:transparent;padding:0;display:grid;place-items:center}
+.chk.on{background:var(--good);border-color:var(--good);color:var(--surface)}
+.chk svg{width:16px;height:16px}
+
+/* journey */
+.lvcard{background:var(--accent-2);color:#eaf6f1;border-radius:20px;padding:18px;display:grid;gap:10px}
+:root .lvcard{--lvtrack:rgba(255,255,255,.16)}
+.lvcard .k{font-size:12px;text-transform:uppercase;letter-spacing:.07em;opacity:.75;font-weight:600}
+.lvcard .name{font-family:var(--f-disp);font-weight:800;font-size:24px;line-height:1.1}
+.xp{height:12px;border-radius:99px;background:var(--lvtrack);overflow:hidden}
+.xp i{display:block;height:100%;background:linear-gradient(90deg,#e0b257,#f3d58f);border-radius:99px}
+.lvcard .ends{display:flex;justify-content:space-between;font-size:12.5px;opacity:.85}
+.road{display:grid;gap:0;position:relative}
+.ms{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:start;padding-bottom:16px;position:relative}
+.ms:not(:last-child)::before{content:"";position:absolute;left:16px;top:34px;bottom:0;width:2px;background:var(--line)}
+.ms.done:not(:last-child)::before{background:var(--good)}
+.ms .dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800;background:var(--sunk);color:var(--muted);border:2px solid var(--line)}
+.ms.done .dot{background:var(--good);border-color:var(--good);color:var(--surface)}
+.ms.next .dot{background:var(--gold);border-color:var(--gold);color:var(--surface);box-shadow:0 0 0 5px var(--gold-soft)}
+.ms .t{font-weight:700;line-height:1.3}
+.ms .s{font-size:13px;color:var(--muted)}
+.ms .when{font-size:12.5px;color:var(--muted);white-space:nowrap;text-align:right}
+.ms.next .t{color:var(--gold-ink)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.badge{border-radius:14px;padding:12px 8px;text-align:center;display:grid;gap:4px;justify-items:center;background:var(--sunk);color:var(--muted)}
+.badge .em{font-size:28px;line-height:1;filter:grayscale(1);opacity:.45}
+.badge .n{font-size:12.5px;font-weight:700;line-height:1.25}
+.badge .p{font-size:11px}
+.badge.on{background:var(--gold-soft);color:var(--gold-ink)}
+.badge.on .em{filter:none;opacity:1}
+
+/* budget */
+.zero{border-radius:var(--r);padding:14px 16px;display:grid;gap:4px}
+.zero.ok{background:var(--good-soft);color:var(--good)}
+.zero.left{background:var(--warn-soft);color:var(--warn)}
+.zero.over{background:var(--bad-soft);color:var(--bad)}
+.zero .v{font-family:var(--f-disp);font-weight:800;font-size:24px}
+.explain{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:13.5px;background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.stack{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--sunk);margin-top:10px}
+.stack i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;margin-top:8px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend em{width:10px;height:10px;border-radius:3px;display:inline-block}
+.bar{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bar i.over{background:var(--bad)}
+.bline{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line);align-items:center}
+.bline:first-child{border-top:0}
+.bline .nm{font-weight:600}
+.bline .sp{grid-column:1/-1;font-size:12px;color:var(--muted)}
+
+/* forms */
+input,select,textarea,button{font:inherit;color:inherit}
+input[type=text],input[type=number],input[type=date],select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;min-width:0}
+.wish input{background:var(--surface)}
+input.money{width:130px;text-align:right}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);padding:9px 13px;font-weight:600}
+button.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.goldb{background:var(--gold);color:var(--surface);border-color:var(--gold)}
+button.ghost{background:transparent;border-color:transparent;color:var(--accent);padding:6px 8px}
+button.sm{font-size:13px;padding:6px 10px}
+button:disabled{opacity:.5;cursor:default}
+form.f{display:grid;gap:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns>button{flex:1}
+.seg{display:flex;background:var(--sunk);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;padding:7px}
+.seg button.on{background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.monthnav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.monthnav h2{font-size:18px}
+.mgroup{display:grid;gap:4px}
+.mhead{display:flex;justify-content:space-between;align-items:baseline;padding:4px 2px}
+.mhead b{font-family:var(--f-disp);font-size:16px}
+.chart{display:grid;gap:6px}
+.crow{display:grid;grid-template-columns:54px 1fr 54px;gap:8px;align-items:center;font-size:12.5px}
+.crow .track{height:12px;background:var(--sunk);border-radius:4px;overflow:hidden;position:relative}
+.crow .track i{display:block;height:100%;background:var(--accent);opacity:.8}
+.crow.now .track i{background:var(--gold);opacity:1}
+.crow .v{text-align:right;color:var(--muted)}
+.banner{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 12px;font-size:13px}
+.empty{text-align:center;padding:20px 10px;color:var(--muted)}
+.prog{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
+.prog i{width:10px;height:6px;border-radius:2px;background:var(--sunk)}
+.prog i.p{background:var(--good)}
+.confirm{display:flex;gap:6px;align-items:center;font-size:13px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{display:grid;justify-items:center;gap:4px;font-size:11px;color:var(--muted)}
+.day i{width:100%;aspect-ratio:1;max-width:38px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:14px;background:var(--sunk)}
+.day.ok i{background:var(--good-soft);color:var(--good)}
+.day.over i{background:var(--bad-soft);color:var(--bad)}
+.day.today i{outline:2px solid var(--gold);outline-offset:1px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs a{display:grid;justify-items:center;gap:2px;padding:8px 2px 10px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none}
+nav.tabs a svg{width:22px;height:22px}
+nav.tabs a.on{color:var(--accent)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 10px 9px 14px;border-radius:10px;font-size:13.5px;z-index:20;max-width:92vw;display:flex;gap:10px;align-items:center}
+#toast button{background:transparent;border:0;color:var(--gold);padding:2px 6px}
+@media (prefers-reduced-motion:no-preference){.xp i,.bar i,.hero .ring circle{transition:width .5s ease,stroke-dashoffset .6s ease}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="hello" id="hello">Sổ tiền<small>Đang mở sổ…</small></div>
+    <div class="lvchip" id="lvchip" hidden></div>
+  </header>
+  <div id="loadNote" class="banner" hidden>Chưa tải được dữ liệu. Có thể mạng đang chậm, chờ một chút nhé.</div>
+  <section class="view" id="v-hom-nay"></section>
+  <section class="view" id="v-hanh-trinh" hidden></section>
+  <section class="view" id="v-lich-tra" hidden></section>
+  <section class="view" id="v-ngan-sach" hidden></section>
+  <section class="view" id="v-ghi-chep" hidden></section>
+</div>
+
+<nav class="tabs" aria-label="Các mục"><div class="in">
+  <a href="#hom-nay" data-v="hom-nay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Hôm nay</a>
+  <a href="#hanh-trinh" data-v="hanh-trinh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l5-9 4 5 3-4 4 8z"/><path d="M15 4v5M15 4l4 1.5L15 7"/></svg>Hành trình</a>
+  <a href="#lich-tra" data-v="lich-tra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Lịch trả</a>
+  <a href="#ngan-sach" data-v="ngan-sach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>Ngân sách</a>
+  <a href="#ghi-chep" data-v="ghi-chep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"/><path d="M9 11h6M9 15h6"/></svg>Ghi chép</a>
+</div></nav>
+
+<script>
+const CATS=[
+  {id:'nha',name:'Tiền nhà'},{id:'an',name:'Ăn uống'},{id:'dilai',name:'Đi lại, xăng xe'},
+  {id:'dt',name:'Điện thoại, mạng'},{id:'congviec',name:'Công cụ làm việc'},{id:'choi',name:'Tiêu thoải mái'},
+  {id:'khac',name:'Linh tinh, hiếu hỉ'},{id:'caumo',name:'Trả cậu mợ'},{id:'duphong',name:'Dự phòng (để dành)'}
+];
+const INCATS=[{id:'luong',name:'Lương'},{id:'lamthem',name:'Làm thêm'},{id:'khac_in',name:'Thu khác'}];
+const FLEX=['an','choi'];
+const QUICK_DEFAULT=[{label:'Bánh mì',amount:35000,cat:'an'},{label:'Cơm gà',amount:45000,cat:'an'},{label:'Cháo',amount:35000,cat:'an'},{label:'Đổ xăng',amount:75000,cat:'dilai'},{label:'Cà phê',amount:39000,cat:'choi'}];
+const LEVELS=[[0,'Tân binh thoát nợ'],[.1,'Người cắt lãi'],[.25,'Chiến binh trả góp'],[.5,'Nửa đường tự do'],[.75,'Sắp về đích'],[1,'Tự do tài chính']];
+const p2=n=>String(n).padStart(2,'0');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const vnd=n=>Math.round(n||0).toLocaleString('vi-VN')+'đ';
+const k=n=>{const a=Math.abs(n||0);return (n<0?'−':'')+(a>=1e6?(Math.round(a/1e5)/10).toLocaleString('vi-VN')+'tr':Math.round(a/1000)+'k')};
+const tr=n=>{const v=(n||0)/1e6;const r=Math.abs(v)>=100?Math.round(v):Math.round(v*10)/10;return r.toLocaleString('vi-VN')+'tr'};
+const todayS=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const D=s=>new Date(s+'T00:00');
+const iso=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+const addDay=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d)};
+const diffDays=(a,b)=>Math.round((D(b)-D(a))/864e5);
+const addYm=(ym,n)=>{let[y,m]=ym.split('-').map(Number);m+=n;y+=Math.floor((m-1)/12);m=((m-1)%12+12)%12+1;return y+'-'+p2(m)};
+const dim=ym=>{const[y,m]=ym.split('-').map(Number);return new Date(y,m,0).getDate()};
+const mName=ym=>{const[y,m]=ym.split('-');return 'Tháng '+Number(m)+'/'+y};
+const mShort=ym=>{const[y,m]=ym.split('-');return 'T'+Number(m)+'/'+y.slice(2)};
+const dd=s=>s.slice(8,10), mm=s=>Number(s.slice(5,7));
+const WD=['CN','T2','T3','T4','T5','T6','T7'];
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>';
+const catName=id=>{if(id&&id.startsWith('f_')){const f=S.funds.find(x=>'f_'+x.id===id);return f?('Quỹ '+f.name):'Quỹ'}return (CATS.find(c=>c.id===id)||INCATS.find(c=>c.id===id)||{name:id||'Khác'}).name};
+
+const S={loaded:false,meta:null,debts:[],payments:{},txns:[],budgets:{},funds:[],wishes:[],got:0,view:'hom-nay',bYm:null,tYm:null,txDir:'out',showAll:false,confirmDel:null};
+let db=null, canWrite=false;
+
+/* ---------- money logic ---------- */
+function schedule(d){
+  if(d.closed||d.kind==='family'||!d.first) return [];
+  const out=[];
+  for(let ym=d.first; ym<=d.last; ym=addYm(ym,1)){
+    const a=(d.amounts&&d.amounts[ym]!=null)?d.amounts[ym]:(ym===d.last&&d.lastAmount?d.lastAmount:d.monthly);
+    const key=d.id+'_'+ym;
+    out.push({debt:d,ym,date:ym+'-'+p2(Math.min(d.day||1,dim(ym))),amount:a,key,paid:!!S.payments[key]});
+  }
+  return out;
+}
+const items=()=>S.debts.flatMap(schedule).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+const remainingOf=d=>{
+  if(d.kind==='family'){const back=S.txns.filter(t=>t.dir==='out'&&t.cat==='caumo').reduce((s,t)=>s+t.amount,0);return Math.max(0,(d.remaining||0)-back)}
+  return schedule(d).filter(i=>!i.paid).reduce((s,i)=>s+i.amount,0);
+};
+const lastYm=d=>d.last||'';
+function cash(){
+  const m=S.meta; if(!m) return null;
+  let c=m.cashStart||0; const from=m.cashStartDate||'0000';
+  for(const t of S.txns){ if(t.date>=from) c+= t.dir==='in'?t.amount:-t.amount }
+  for(const key in S.payments){const p=S.payments[key]; if((p.paidAt||'')>=from) c-=p.amount||0}
+  return c;
+}
+const fundSaved=f=>(f.saved||0)+S.txns.filter(t=>t.cat==='f_'+f.id).reduce((s,t)=>s+(t.dir==='out'?t.amount:-t.amount),0);
+const fundsTotal=()=>S.funds.reduce((s,f)=>s+fundSaved(f),0);
+const appDebts=()=>S.debts.filter(d=>!d.closed&&d.kind!=='family');
+const family=()=>S.debts.find(d=>d.kind==='family');
+function netDebt(){
+  const a=appDebts().reduce((s,d)=>s+remainingOf(d),0), f=family()?remainingOf(family()):0, c=cash()||0;
+  return a+f-c-fundsTotal();
+}
+function level(){
+  const start=S.meta?.netStart||300000000, net=netDebt();
+  const p=Math.max(0,Math.min(1,(start-net)/start));
+  let i=0;LEVELS.forEach((l,j)=>{if(p>=l[0])i=j});
+  const next=LEVELS[i+1];
+  return {p,i:i+1,name:LEVELS[i][1],next:next?next[1]:null,nextAt:next?next[0]:1,start,net};
+}
+function monthDebt(ym){return items().filter(i=>i.ym===ym)}
+function budgetCalc(ym){
+  const b=S.budgets[ym]; if(!b) return null;
+  const debtPlan=monthDebt(ym).reduce((s,i)=>s+i.amount,0);
+  const lines=b.lines||{};
+  const sumLines=Object.values(lines).reduce((s,v)=>s+(Number(v)||0),0);
+  const avail=(b.start||0)+(b.income||0);
+  return {b,debtPlan,sumLines,avail,left:avail-debtPlan-sumLines};
+}
+const spent=(ym,cat)=>S.txns.filter(t=>t.dir==='out'&&t.cat===cat&&t.date.slice(0,7)===ym).reduce((s,t)=>s+t.amount,0);
+
+/* daily game */
+function period(ym){const from=S.meta?.cashStartDate||'';const start=from.slice(0,7)===ym?from:ym+'-01';const end=ym+'-'+p2(dim(ym));return{start,end,days:diffDays(start,end)+1}}
+function allowance(ym){const b=S.budgets[ym];if(!b)return null;const L=b.lines||{};return FLEX.reduce((s,c)=>s+(Number(L[c])||0),0)/period(ym).days}
+const flexSpent=d=>S.txns.filter(t=>t.dir==='out'&&t.date===d&&FLEX.includes(t.cat)).reduce((s,t)=>s+t.amount,0);
+const trackStart=()=>S.meta?.cashStartDate||todayS();
+function dayOk(d){const a=allowance(d.slice(0,7));return a==null?null:flexSpent(d)<=a}
+function streaks(){
+  const t=todayS(), st=trackStart(); let cur=0,best=0,run=0;
+  for(let d=st; d<t; d=addDay(d,1)){const ok=dayOk(d); if(ok===null) continue; run=ok?run+1:0; best=Math.max(best,run)}
+  cur=run; return {cur,best};
+}
+function jar(ym){
+  const t=todayS(), p=period(ym), a=allowance(ym); let s=0;
+  if(a!=null) for(let d=p.start; d<=p.end && d<t; d=addDay(d,1)) s+=a-flexSpent(d);
+  const skipped=S.wishes.filter(w=>w.status==='skipped'&&(w.decidedAt||w.createdAt||'').slice(0,7)===ym).reduce((x,w)=>x+w.price,0);
+  return {daily:s,skipped,total:s+skipped};
+}
+const skippedAll=()=>S.wishes.filter(w=>w.status==='skipped').reduce((s,w)=>s+w.price,0);
+const noLoanDays=()=>Math.max(0,diffDays(S.meta?.noNewLoanSince||trackStart(),todayS()));
+const hourly=()=>(S.meta?.incomeMonthly||18000000)/26/8;
+
+/* milestones & badges */
+function milestones(){
+  const t=todayS(), list=[];
+  const closed=S.debts.filter(d=>d.closed);
+  list.push({t:'Tất toán các khoản lãi cao nhất',s:closed.map(d=>d.name.split(' ')[0]+' '+(d.name.match(/\d+tr/)||[''])[0]).join(', '),done:closed.length>=3,ym:'2026-11'});
+  const groups={};
+  appDebts().forEach(d=>{const g=d.app==='Shopee'?'Shopee':d.id;(groups[g]=groups[g]||[]).push(d)});
+  for(const g in groups){const ds=groups[g];const last=ds.map(lastYm).sort().pop();const rem=ds.reduce((s,d)=>s+remainingOf(d),0);
+    list.push({t:g==='Shopee'?'Xóa sổ Shopee (SEasy, SPayLater)':'Xong '+ds[0].name,s:rem?'Còn '+vnd(rem):'Đã trả hết',done:rem===0,ym:last})}
+  const appAll=appDebts().filter(d=>d.id!=='homecredit');
+  const appLast=appAll.map(lastYm).sort().pop()||'2027-10';
+  list.push({t:'Hết sạch nợ app lãi cao',s:'Chỉ còn Home Credit và cậu mợ',done:appAll.every(d=>remainingOf(d)===0),ym:appLast,big:true});
+  const f=family(); if(f){const r=remainingOf(f);list.push({t:'Trả xong cậu mợ',s:r?'Còn '+vnd(r)+' · dự kiến khi dồn ~8tr/tháng':'Đã trả hết',done:r===0,ym:addYm(appLast,Math.ceil(r/8e6)||0),est:true})}
+  const kc=S.funds.find(x=>/khẩn|khan/i.test(x.name));
+  list.push({t:'Quỹ khẩn cấp 30tr của riêng mình',s:kc?tr(fundSaved(kc))+' / '+tr(kc.target):'Lập khi các khoản app xong',done:kc?fundSaved(kc)>=kc.target:false,ym:addYm(appLast,4),est:true});
+  list.sort((a,b)=>a.done!==b.done?(a.done?-1:1):(a.ym<b.ym?-1:a.ym>b.ym?1:0));
+  const ni=list.findIndex(m=>!m.done); if(ni>=0) list[ni].next=true;
+  return list;
+}
+function badges(){
+  const st=streaks(), nl=noLoanDays(), closed=S.debts.filter(d=>d.closed).length;
+  const onTime=Object.keys(S.payments).filter(key=>{const p=S.payments[key];const it=items().find(i=>i.key===key);return it&&(p.paidAt||'')<=it.date}).length;
+  const sk=S.wishes.filter(w=>w.status==='skipped'), skT=skippedAll();
+  const tet=S.funds.find(f=>/tết|tet/i.test(f.name));
+  const tp=S.debts.find(d=>d.id==='tpbank');
+  const lv=level();
+  const B=(em,n,on,p)=>({em,n,on,p});
+  return [
+    B('✂️','Cắt lãi cắt cổ',closed>=3,closed+'/3 khoản'),
+    B('🌱','7 ngày không vay',nl>=7,Math.min(nl,7)+'/7 ngày'),
+    B('🛡️','1 tháng sạch nợ mới',nl>=30,Math.min(nl,30)+'/30 ngày'),
+    B('🏯','100 ngày tự chủ',nl>=100,Math.min(nl,100)+'/100'),
+    B('🔥','Tuần giữ mức',st.best>=7,Math.min(st.best,7)+'/7 ngày'),
+    B('🌕','Tháng giữ mức',st.best>=30,Math.min(st.best,30)+'/30'),
+    B('⏰','Trả đúng hạn ×5',onTime>=5,Math.min(onTime,5)+'/5 kỳ'),
+    B('🏅','Trả đúng hạn ×20',onTime>=20,Math.min(onTime,20)+'/20'),
+    B('🙅','Nói "không" lần đầu',sk.length>=1,sk.length?'Đã bỏ '+sk.length+' món':'Chưa có'),
+    B('💪','Từ chối 1 triệu',skT>=1e6,k(Math.min(skT,1e6))+'/1tr'),
+    B('💳','Hết nợ thẻ',tp?remainingOf(tp)===0:false,tp?(remainingOf(tp)?'Còn '+k(remainingOf(tp)):'Xong'):''),
+    B('🧧','Đủ quỹ Tết',tet?fundSaved(tet)>=tet.target:false,tet?k(fundSaved(tet))+'/'+k(tet.target):'Chưa lập'),
+    B('📒','Ghi chép 30 lần',S.txns.length>=30,Math.min(S.txns.length,30)+'/30'),
+    B('⛰️','Nửa đường',lv.p>=.5,Math.round(lv.p*100)+'/50%'),
+  ];
+}
+
+/* ---------- writes ---------- */
+async function w(fn){ if(!db||!canWrite) return false; try{ await fn(); return true }catch(e){ toast(e&&e.code==='invalid_argument'?'Bạn không có quyền sửa sổ này.':'Chưa lưu được, thử lại nhé.'); if(e&&e.code==='invalid_argument'){canWrite=false;render()} return false } }
+function toast(msg,undo){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t)}
+  t.innerHTML='<span></span>'+(undo?'<button type="button">Hoàn tác</button>':'');t.firstChild.textContent=msg;
+  if(undo)t.querySelector('button').onclick=()=>{t.hidden=true;undo()};t.hidden=false;clearTimeout(t._h);t._h=setTimeout(()=>t.hidden=true,undo?5000:2600)}
+async function togglePay(key){
+  const it=items().find(i=>i.key===key); if(!it) return;
+  if(it.paid) await w(()=>db.doc('payments/'+key).delete());
+  else if(await w(()=>db.doc('payments/'+key).set({debtId:it.debt.id,ym:it.ym,amount:it.amount,paidAt:todayS()}))) toast('Đã trả '+it.debt.name+'. Bớt được một kỳ nợ!');
+}
+async function addTx(doc,msg){const ref=db.collection('txns').doc();if(await w(()=>ref.set(doc)))toast(msg,()=>w(()=>ref.delete()))}
+
+/* ---------- views ---------- */
+function vToday(){
+  const t=todayS(), ym=t.slice(0,7), a=allowance(ym), sp=flexSpent(t), st=streaks(), jr=jar(ym), nl=noLoanDays();
+  const quick=S.meta?.quick||QUICK_DEFAULT;
+  const all=items(), overdue=all.filter(i=>!i.paid&&i.date<t), next=all.filter(i=>!i.paid&&i.date>=t).slice(0,3);
+  let hero;
+  if(a==null){hero=`<div class="card empty">Tháng này chưa có ngân sách nên chưa tính được mức tiêu mỗi ngày. <a href="#ngan-sach">Lập ngân sách</a></div>`}
+  else{
+    const left=a-sp, pct=Math.min(1,sp/a), C=2*Math.PI*50;
+    const msg=left>=0?`Giữ được thì <b>${vnd(left)}</b> rơi vào hũ tối nay.`:`Vượt ${vnd(-left)}. Mai bớt một chút là cân lại.`;
+    hero=`<div class="hero"><div class="ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="12"/><circle cx="60" cy="60" r="50" fill="none" stroke="${left>=0?'#f3d58f':'#ffb3a8'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/></svg><div class="c"><div><b>${k(sp)}</b><span>đã tiêu<br>/ ${k(a)}</span></div></div></div>
+    <div><div class="k">Hôm nay còn được tiêu</div><div class="left">${left>=0?vnd(left):'−'+vnd(-left)}</div><div class="msg">${msg}</div></div></div>`;
+  }
+  // last 7 days strip
+  const days=[];for(let i=6;i>=0;i--){const d=addDay(t,-i);const ok=d<trackStart()?null:(d===t?null:dayOk(d));days.push({d,ok})}
+  return `
+  ${overdue.length?`<div class="banner"><b>${overdue.length} khoản quá hạn chưa đánh dấu:</b> ${overdue.map(i=>esc(i.debt.name)).join(', ')}. Trả rồi thì tích ở Lịch trả.</div>`:''}
+  ${hero}
+  <div class="stats">
+    <div class="stat gold"><span class="ico">🫙</span><span class="v">${k(Math.max(0,jr.total))}</span><span class="t">Hũ tháng này giữ lại được</span></div>
+    <div class="stat"><span class="ico">🔥</span><span class="v">${st.cur}</span><span class="t">Ngày liên tiếp giữ mức · kỷ lục ${st.best}</span></div>
+    <div class="stat"><span class="ico">🌱</span><span class="v">${nl}</span><span class="t">Ngày không vay khoản mới</span></div>
+  </div>
+  <div class="card"><div class="row" style="margin-bottom:10px"><h3>7 ngày qua</h3><span class="note">Xanh là giữ mức</span></div>
+    <div class="week">${days.map(x=>`<div class="day ${x.d===t?'today':''} ${x.ok===true?'ok':x.ok===false?'over':''}"><i>${x.ok===true?'✓':x.ok===false?'!':x.d===t?'•':''}</i>${WD[D(x.d).getDay()]} ${dd(x.d)}</div>`).join('')}</div></div>
+  ${canWrite?`<div class="card"><div class="row" style="margin-bottom:10px"><h3>Ghi nhanh một chạm</h3><a href="#ghi-chep" style="font-size:13px;font-weight:600;color:var(--accent)">Khoản khác</a></div>
+    <div class="quick">${quick.map((q,i)=>`<button class="qbtn" data-q="${i}">${esc(q.label)}<span>${k(q.amount)}</span></button>`).join('')}</div></div>`:''}
+  ${vWish()}
+  <div class="card"><div class="row"><h3>Sắp phải trả</h3><a href="#lich-tra" style="font-size:13px;font-weight:600;color:var(--accent)">Cả lịch</a></div>
+    <div class="list">${next.length?next.map(itemRow).join(''):'<div class="empty">Không còn khoản nào sắp đến hạn.</div>'}</div></div>`;
+}
+function vWish(){
+  const waiting=S.wishes.filter(x=>x.status==='waiting');
+  return `<div class="wish"><div><h3>Muốn mua gì à?</h3><div class="note" style="color:inherit;opacity:.8">Nhập vào đây trước khi bấm mua. Xem nó đáng bao nhiêu công sức đã.</div></div>
+  ${canWrite?`<div class="two"><input type="text" id="wName" placeholder="Món gì?" maxlength="40"><input type="number" inputmode="numeric" id="wPrice" placeholder="Giá" step="1000" min="0"></div>
+  <div class="impact" id="wImpact">${impactHtml()}</div>
+  <div class="btns"><button class="goldb" data-wish="skip">Thôi, bỏ vào hũ</button><button data-wish="wait">Để 24 giờ nghĩ đã</button></div>`:''}
+  ${waiting.length?`<div class="wl">${waiting.map(x=>{const h=Math.max(0,24-(Date.now()-new Date(x.createdAt))/36e5);
+    return `<div class="witem"><div style="flex:1;min-width:0"><div style="font-weight:600">${esc(x.name)} · ${vnd(x.price)}</div><div class="note">${h>0?'Còn '+Math.ceil(h)+' giờ suy nghĩ':'Hết 24 giờ. Vẫn muốn chứ?'}</div></div>${canWrite?`<button class="sm goldb" data-wskip="${esc(x.id)}">Bỏ</button>${h<=0?`<button class="sm" data-wbuy="${esc(x.id)}">Mua</button>`:''}`:''}</div>`}).join('')}</div>`:''}
+  </div>`;
+}
+function impactHtml(){
+  const pEl=document.getElementById('wPrice'); const price=pEl?Math.round(Number(pEl.value)||0):0;
+  if(!price) return '<div class="note" style="color:inherit;opacity:.75">Gõ giá vào để xem quy đổi.</div>';
+  const food=115000, hours=price/hourly(), cakeK=3733362;
+  return `<div><b>${(price/food).toLocaleString('vi-VN',{maximumFractionDigits:1})}</b><span>ngày ăn uống của bạn</span></div>
+  <div><b>${hours<10?hours.toLocaleString('vi-VN',{maximumFractionDigits:1}):Math.round(hours)}</b><span>giờ đi làm để kiếm lại</span></div>
+  <div><b>${Math.round(price/cakeK*100)}%</b><span>một kỳ trả Cake</span></div>`;
+}
+function itemRow(i){
+  const t=todayS(), dl=diffDays(t,i.date); const st=i.paid?'<span class="pill good">Đã trả</span>':i.date<t?'<span class="pill bad">Quá hạn</span>':(dl<=3?'<span class="pill warn">'+(dl===0?'Hôm nay':'Còn '+dl+' ngày')+'</span>':'');
+  return `<div class="item"><div class="date"><b>${dd(i.date)}</b><span>Th${mm(i.date)}</span></div>
+  <div class="main"><div class="t">${esc(i.debt.name)}</div><div class="s">${esc(i.debt.app||'')}${i.debt.note?' · '+esc(i.debt.note):''}</div></div>
+  <div style="display:grid;justify-items:end;gap:3px"><span class="amt">${vnd(i.amount)}</span>${st}</div>
+  ${canWrite?`<button class="chk ${i.paid?'on':''}" data-pay="${esc(i.key)}" aria-label="${i.paid?'Bỏ đánh dấu đã trả':'Đánh dấu đã trả'} ${esc(i.debt.name)}">${i.paid?CHECK:''}</button>`:''}</div>`;
+}
+
+function vJourney(){
+  const lv=level(), ms=milestones(), bs=badges(), ym=todayS().slice(0,7), all=items();
+  const nx=ms.find(m=>m.next);
+  const months=[];for(let i=0;i<12;i++){const m=addYm(ym,i);months.push({m,v:all.filter(x=>x.ym===m).reduce((s,x)=>s+x.amount,0)})}
+  const inc=S.meta?.incomeMonthly||0, mx=Math.max(inc,...months.map(x=>x.v),1);
+  const active=appDebts().sort((a,b)=>lastYm(a)<lastYm(b)?-1:1);
+  const fam=family();
+  return `
+  <div class="lvcard"><div class="row"><div><div class="k">Cấp ${lv.i} · hành trình thoát nợ</div><div class="name">${esc(lv.name)}</div></div><div style="font-family:var(--f-disp);font-size:30px;font-weight:800">${Math.round(lv.p*100)}%</div></div>
+    <div class="xp" role="progressbar" aria-valuenow="${Math.round(lv.p*100)}" aria-valuemin="0" aria-valuemax="100" aria-label="Tiến độ thoát nợ"><i style="width:${Math.max(2,lv.p*100)}%"></i></div>
+    <div class="ends"><span>Nợ ròng lúc đầu ${tr(lv.start)}</span><span>Còn ${tr(Math.max(0,lv.net))}</span></div>
+    <div style="font-size:13.5px;opacity:.9">${lv.next?`Lên cấp "${esc(lv.next)}" khi nợ ròng còn ${tr(lv.start*(1-lv.nextAt))}, tức bớt thêm ${tr(Math.max(0,lv.net-lv.start*(1-lv.nextAt)))}.`:'Bạn đã tự do!'} Nợ ròng = tổng nợ trừ tiền đang có và các quỹ.</div></div>
+  ${nx?`<div class="card" style="border-color:var(--gold)"><div class="lbl" style="color:var(--gold)">Mốc tiếp theo</div><h3 style="margin-top:2px">${esc(nx.t)}</h3><div class="note">${esc(nx.s)} · ${nx.est?'dự kiến ':''}${mName(nx.ym).toLowerCase()}</div></div>`:''}
+  <div class="card"><h3 style="margin-bottom:14px">Con đường về đích</h3><div class="road">${ms.map((m,i)=>`<div class="ms ${m.done?'done':''} ${m.next?'next':''}"><div class="dot">${m.done?'✓':i+1}</div><div><div class="t">${esc(m.t)}</div><div class="s">${esc(m.s)}</div></div><div class="when">${m.done?'Xong':(m.est?'~':'')+mShort(m.ym)}</div></div>`).join('')}</div></div>
+  <div class="card"><div class="row" style="margin-bottom:12px"><h3>Huy hiệu</h3><span class="note">${bs.filter(b=>b.on).length}/${bs.length} đã mở</span></div>
+    <div class="badges">${bs.map(b=>`<div class="badge ${b.on?'on':''}"><span class="em" aria-hidden="true">${b.em}</span><span class="n">${esc(b.n)}</span><span class="p">${b.on?'Đã đạt':esc(b.p)}</span></div>`).join('')}</div></div>
+  <div class="card"><h3>Gánh nợ nhẹ dần mỗi tháng</h3><div class="note" style="margin-bottom:10px">Tiền phải trả các app và thẻ. Vạch đứt là thu nhập ${tr(inc)}.</div>
+    <div class="chart">${months.map(x=>`<div class="crow ${x.m===ym?'now':''}"><span>${mShort(x.m)}</span><div class="track"><i style="width:${(x.v/mx*100).toFixed(1)}%"></i>${inc?`<span style="position:absolute;top:-2px;bottom:-2px;left:${(inc/mx*100).toFixed(1)}%;border-left:2px dashed var(--muted)"></span>`:''}</div><span class="v">${tr(x.v)}</span></div>`).join('')}</div></div>
+  <div class="card"><h3 style="margin-bottom:4px">Từng khoản nợ</h3><div class="list">${active.map(d=>{const sc=schedule(d),left=sc.filter(i=>!i.paid),r=left.reduce((s,i)=>s+i.amount,0);
+    return `<div class="item" style="display:block"><div class="row"><span class="t">${esc(d.name)}</span><span class="amt">${vnd(r)}</span></div><div class="s">${esc(d.app||'')}${d.rate?' · lãi '+esc(d.rate):''} · còn ${left.length} kỳ${left.length?', xong '+mShort(sc[sc.length-1].ym):''}</div><div class="prog">${sc.map(i=>`<i class="${i.paid?'p':''}"></i>`).join('')}</div></div>`}).join('')}
+    ${fam?`<div class="item" style="display:block"><div class="row"><span class="t">${esc(fam.name)}</span><span class="amt">${vnd(remainingOf(fam))}</span></div><div class="s">Không lãi. Ghi giao dịch "Trả cậu mợ" để trừ dần.</div></div>`:''}</div></div>`;
+}
+
+function vSchedule(){
+  const t=todayS(), ym=t.slice(0,7), all=items();
+  const end=S.showAll?'9999-99':addYm(ym,2);
+  const shown=all.filter(i=>(i.ym>=ym&&i.ym<=end)||(!i.paid&&i.date<t));
+  const groups={};shown.forEach(i=>{(groups[i.ym]=groups[i.ym]||[]).push(i)});
+  const keys=Object.keys(groups).sort();
+  return `<h2>Lịch trả nợ</h2>${canWrite?'<p class="note" style="margin:0">Trả xong khoản nào thì bấm vòng tròn. Tiền đang có tự trừ, thanh tiến độ ở Hành trình tự tăng.</p>':''}
+  ${keys.length?keys.map(key=>{const g=groups[key];const tot=g.reduce((s,i)=>s+i.amount,0),left=g.filter(i=>!i.paid).reduce((s,i)=>s+i.amount,0);
+    return `<div class="mgroup"><div class="mhead"><b>${mName(key)}</b><span class="muted" style="font-size:13px">${left?'còn '+vnd(left)+' / ':'xong cả '}${vnd(tot)}</span></div><div class="card"><div class="list">${g.map(itemRow).join('')}</div></div></div>`}).join(''):'<div class="card empty">Chưa có lịch trả nào.</div>'}
+  <button data-showall="1">${S.showAll?'Chỉ xem 3 tháng tới':'Xem toàn bộ lịch đến hết nợ'}</button>`;
+}
+
+function zeroBox(bc,ym){
+  const L=bc.left, cls=Math.abs(L)<1000?'ok':L>0?'left':'over';
+  return `<div class="zero ${cls}"><span class="lbl" style="color:inherit">${mName(ym)}</span><div class="v">${cls==='ok'?'Đã về 0 ✓':cls==='left'?'Còn '+vnd(L)+' chưa có việc':'Giao quá '+vnd(-L)}</div><div style="font-size:13px">${cls==='ok'?'Đồng nào cũng có việc. Phần để dành là dòng Dự phòng.':cls==='left'?'Giao nốt cho một dòng nào đó, thường là Dự phòng.':'Bớt một dòng nào đó cho cân.'}</div></div>`;
+}
+function vBudget(){
+  const ym=S.bYm, bc=budgetCalc(ym);
+  const nav=`<div class="monthnav"><button class="sm" data-bm="-1" aria-label="Tháng trước">‹</button><h2>${mName(ym)}</h2><button class="sm" data-bm="1" aria-label="Tháng sau">›</button></div>`;
+  const explain=`<div class="explain"><span aria-hidden="true">💡</span><div><b>"Về 0" không phải tiêu hết tiền.</b> Nghĩa là đồng nào cũng được giao việc: trả nợ, ăn, đi lại, hay để dành. Muốn tiêu thêm chỗ này thì phải lấy bớt chỗ khác.</div></div>`;
+  if(!bc){const prev=S.budgets[addYm(ym,-1)];
+    return nav+explain+`<div class="card empty"><p>Tháng này chưa có ngân sách.</p>${canWrite?`<button class="pri" data-newb="${ym}">Lập ngân sách ${mName(ym).toLowerCase()}</button><p class="note">${prev?'Chép các dòng từ tháng trước, lấy Dự phòng tháng trước làm tiền mang sang.':''}</p>`:''}</div>`}
+  const b=bc.b, lines=b.lines||{};
+  const debtPaid=monthDebt(ym).filter(i=>i.paid).reduce((s,i)=>s+i.amount,0);
+  const inc=S.txns.filter(t=>t.dir==='in'&&t.date.slice(0,7)===ym).reduce((s,t)=>s+t.amount,0);
+  const keys=[...CATS.map(c=>c.id),...S.funds.map(f=>'f_'+f.id)];
+  const flexT=FLEX.reduce((s,c)=>s+(Number(lines[c])||0),0), save=(Number(lines.duphong)||0)+S.funds.reduce((s,f)=>s+(Number(lines['f_'+f.id])||0),0);
+  const other=Math.max(0,bc.sumLines-flexT-save);
+  const segs=[[bc.debtPlan,'var(--bad)','Trả nợ'],[flexT,'var(--accent)','Tiêu hằng ngày'],[other,'var(--muted)','Cố định, khác'],[save,'var(--gold)','Để dành']];
+  const tot=Math.max(1,bc.avail);
+  const a=allowance(ym);
+  const moneyIn=(id,val)=>canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-${id}" data-bl="${id}" value="${Math.round(val||0)}">`:`<span class="amt">${vnd(val)}</span>`;
+  return nav+zeroBox(bc,ym)+`
+  <div class="card"><div class="row"><h3>Tiền tháng này đi đâu</h3><span class="amt">${vnd(bc.avail)}</span></div>
+    <div class="stack">${segs.map(s=>`<i style="width:${(Math.max(0,s[0])/tot*100).toFixed(1)}%;background:${s[1]}"></i>`).join('')}</div>
+    <div class="legend">${segs.map(s=>`<span><em style="background:${s[1]}"></em>${s[2]} ${tr(s[0])}</span>`).join('')}</div>
+    ${a!=null?`<p class="note" style="margin:10px 0 0">Ăn uống và tiêu thoải mái chia đều ra mỗi ngày là <b>${vnd(a)}</b>. Đó là con số ở vòng tròn "Hôm nay". Xăng xe, điện thoại, hiếu hỉ không tính vào mức ngày vì mấy hôm mới chi một lần; theo dõi chúng ở các dòng bên dưới.</p>`:''}</div>
+  ${explain}
+  <div class="card"><h3>Tiền có</h3><div class="list">
+    <div class="bline"><label class="nm" for="b-start">Mang sang</label>${canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-start" data-bt="start" value="${Math.round(b.start||0)}">`:`<span class="amt">${vnd(b.start)}</span>`}<span class="sp">Tiền đang có lúc lập, hoặc Dự phòng tháng trước.</span></div>
+    <div class="bline"><label class="nm" for="b-income">Thu nhập sẽ nhận</label>${canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-income" data-bt="income" value="${Math.round(b.income||0)}">`:`<span class="amt">${vnd(b.income)}</span>`}<span class="sp">Đã nhận: ${vnd(inc)}</span></div>
+  </div></div>
+  <div class="card"><div class="row"><h3>Giao việc</h3>${canWrite&&Math.abs(bc.left)>=1000?`<button class="sm" data-fill="${ym}">Cân bằng bằng Dự phòng</button>`:''}</div><div class="list">
+    <div class="bline"><span class="nm">Trả nợ app, thẻ</span><span class="amt">${vnd(bc.debtPlan)}</span><span class="sp">Tự tính từ lịch · đã trả ${vnd(debtPaid)}<div class="bar"><i style="width:${bc.debtPlan?Math.min(100,debtPaid/bc.debtPlan*100):0}%"></i></div></span></div>
+    ${keys.map(id=>{const pl=Number(lines[id])||0, s=id==='duphong'?0:spent(ym,id), pct=pl?s/pl*100:(s?100:0);
+      return `<div class="bline"><label class="nm" for="b-${id}">${esc(catName(id))}</label>${moneyIn(id,pl)}<span class="sp">${id==='duphong'?'Không tiêu. Để bù tháng thiếu.':'Đã chi '+vnd(s)+(pl?' · còn '+vnd(pl-s):'')}${id==='duphong'?'':`<div class="bar"><i class="${s>pl?'over':''}" style="width:${Math.min(100,pct)}%"></i></div>`}</span></div>`}).join('')}
+  </div></div>
+  <div class="card"><h3>Các hũ cho khoản lớn</h3><div class="list">${S.funds.length?S.funds.map(f=>{const s=fundSaved(f),pct=f.target?Math.min(100,s/f.target*100):0;
+    const now=new Date(), mLeft=f.due?Math.max(1,(Number(f.due.slice(0,4))-now.getFullYear())*12+Number(f.due.slice(5,7))-(now.getMonth()+1)+1):0;
+    return `<div class="item" style="display:block"><div class="row"><span class="t">${esc(f.name)}</span><span class="amt">${k(s)} / ${k(f.target)}</span></div><div class="s">${f.target>s&&mLeft?'Bỏ vào '+vnd((f.target-s)/mLeft)+'/tháng là kịp':'Đã đủ'}${f.note?' · '+esc(f.note):''}</div><div class="bar"><i style="width:${pct}%;background:var(--gold)"></i></div></div>`}).join(''):'<div class="empty">Chưa có hũ nào.</div>'}</div>
+    ${canWrite?`<form class="f" id="fundForm" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px"><input type="text" id="fName" placeholder="Tên hũ, ví dụ Sửa xe" required maxlength="40"><div class="two"><input type="number" inputmode="numeric" id="fTarget" placeholder="Cần bao nhiêu" step="100000" min="0" required><input type="text" id="fDue" placeholder="Hạn (VD 2027-03)" pattern="\\d{4}-\\d{2}"></div><button type="submit">Thêm hũ</button><p class="note" style="margin:0">Bỏ tiền vào hũ: ghi giao dịch mục "Quỹ ..." ở Ghi chép.</p></form>`:''}</div>`;
+}
+
+function vTx(){
+  const ym=S.tYm; const list=S.txns.filter(t=>t.date.slice(0,7)===ym).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);
+  const inS=list.filter(t=>t.dir==='in').reduce((s,t)=>s+t.amount,0), outS=list.filter(t=>t.dir==='out').reduce((s,t)=>s+t.amount,0);
+  const cats=S.txDir==='in'?INCATS:[...CATS.filter(c=>c.id!=='duphong'),...S.funds.map(f=>({id:'f_'+f.id,name:'Bỏ vào hũ '+f.name}))];
+  const byDate={};list.forEach(t=>{(byDate[t.date]=byDate[t.date]||[]).push(t)});
+  const done=S.wishes.filter(x=>x.status!=='waiting').sort((a,b)=>(b.decidedAt||'')<(a.decidedAt||'')?-1:1).slice(0,8);
+  return `${canWrite?`<div class="card"><h3 style="margin-bottom:10px">Ghi giao dịch</h3><form class="f" id="txForm">
+    <div class="seg" role="group" aria-label="Loại"><button type="button" data-dir="out" class="${S.txDir==='out'?'on':''}">Chi ra</button><button type="button" data-dir="in" class="${S.txDir==='in'?'on':''}">Tiền vào</button></div>
+    <div class="two"><input type="number" inputmode="numeric" id="txAmt" placeholder="Số tiền" step="1000" min="0" required><input type="date" id="txDate" value="${todayS()}" required></div>
+    <select id="txCat" aria-label="Mục">${cats.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
+    <input type="text" id="txNote" placeholder="Ghi chú (không bắt buộc)" maxlength="80">
+    <button class="pri" type="submit">Lưu</button>
+    <p class="note" style="margin:0">Trả nợ app thì tích ở Lịch trả, đừng ghi ở đây kẻo trừ hai lần. Lười nhập thì chụp màn hình gửi Claude.</p>
+  </form></div>`:''}
+  <div class="monthnav"><button class="sm" data-tm="-1" aria-label="Tháng trước">‹</button><h2>${mName(ym)}</h2><button class="sm" data-tm="1" aria-label="Tháng sau">›</button></div>
+  <div class="grid2"><div class="card"><div class="lbl">Tiền vào</div><div class="big" style="font-size:22px;color:var(--good)">${vnd(inS)}</div></div><div class="card"><div class="lbl">Chi ra</div><div class="big" style="font-size:22px">${vnd(outS)}</div></div></div>
+  <div class="card"><div class="list">${list.length?Object.keys(byDate).map(d=>`<div class="lbl" style="padding-top:10px">${WD[D(d).getDay()]} ${dd(d)}/${mm(d)}</div>`+byDate[d].map(t=>`<div class="item"><div class="main"><div class="t">${esc(catName(t.cat))}</div>${t.note?`<div class="s">${esc(t.note)}</div>`:''}</div><span class="amt" style="color:${t.dir==='in'?'var(--good)':'var(--ink)'}">${t.dir==='in'?'+':'−'}${vnd(t.amount)}</span>${canWrite?(S.confirmDel===t.id?`<span class="confirm"><button class="sm" data-del="${esc(t.id)}" style="color:var(--bad)">Xóa</button><button class="sm ghost" data-nodel="1">Thôi</button></span>`:`<button class="ghost sm" data-askdel="${esc(t.id)}" aria-label="Xóa giao dịch">✕</button>`):''}</div>`).join('')).join(''):'<div class="empty">Tháng này chưa có giao dịch nào.</div>'}</div></div>
+  ${done.length?`<div class="card"><div class="row"><h3>Những món đã cân nhắc</h3><span class="note">Đã từ chối ${vnd(skippedAll())}</span></div><div class="list">${done.map(x=>`<div class="item"><div class="main"><div class="t">${esc(x.name)}</div><div class="s">${x.status==='skipped'?'Đã bỏ, tiền vào hũ':'Đã mua'}</div></div><span class="amt" style="color:${x.status==='skipped'?'var(--good)':'var(--muted)'}">${vnd(x.price)}</span></div>`).join('')}</div></div>`:''}
+  <div class="card"><h3>Sao lưu</h3><p class="note" style="margin:4px 0 10px">Tải toàn bộ sổ về máy, hoặc nhập lại từ file sao lưu. Nhập sẽ ghi đè các mục trùng.</p>
+    <div class="btns"><a href="/api/export" download style="flex:1"><button type="button" style="width:100%">Tải bản sao lưu</button></a><label style="flex:1"><span class="sr" hidden>Chọn file</span><input type="file" id="importFile" accept="application/json,.json" style="display:none"><button type="button" data-import="1" style="width:100%">Nhập từ file</button></label></div></div>`;
+}
+
+/* ---------- render & events ---------- */
+function header(){
+  const c=cash(), lv=S.got?level():null;
+  document.getElementById('hello').innerHTML=`Chào Tùng<small>Tiền đang có: <b style="color:var(--ink)">${c==null?'—':vnd(c)}</b></small>`;
+  const chip=document.getElementById('lvchip');
+  if(lv){chip.hidden=false;chip.innerHTML=`<b>${lv.i}</b>${esc(lv.name)}`}
+}
+function render(){
+  header();
+  if(!S.got){ document.getElementById('v-hom-nay').innerHTML='<div class="card empty">Đang mở sổ…</div>'; return }
+  const ae=document.activeElement, aid=ae&&ae.id, sel=(ae&&ae.selectionStart!=null)?[ae.selectionStart,ae.selectionEnd]:null, keep={};
+  ['txAmt','txDate','txCat','txNote','fName','fTarget','fDue','wName','wPrice'].forEach(id=>{const e=document.getElementById(id);if(e)keep[id]=e.value});
+  const map={'hom-nay':vToday,'hanh-trinh':vJourney,'lich-tra':vSchedule,'ngan-sach':vBudget,'ghi-chep':vTx};
+  document.getElementById('v-'+S.view).innerHTML=map[S.view]();
+  for(const id in keep){const e=document.getElementById(id);if(e&&keep[id]!=='')e.value=keep[id]}
+  const wi=document.getElementById('wImpact'); if(wi) wi.innerHTML=impactHtml();
+  if(aid){const e=document.getElementById(aid);if(e){e.focus();try{sel&&e.setSelectionRange(sel[0],sel[1])}catch{}}}
+}
+function show(v){
+  if(!['hom-nay','hanh-trinh','lich-tra','ngan-sach','ghi-chep'].includes(v)) v='hom-nay';
+  S.view=v; document.querySelectorAll('section.view').forEach(s=>s.hidden=s.id!=='v-'+v);
+  document.querySelectorAll('nav.tabs a').forEach(a=>{a.classList.toggle('on',a.dataset.v===v);if(a.dataset.v===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  render(); window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+
+document.addEventListener('click',e=>{if(e.target.closest('[data-import]'))document.getElementById('importFile').click()});
+document.addEventListener('change',async e=>{if(e.target.id!=='importFile'||!e.target.files[0])return;
+  try{const j=JSON.parse(await e.target.files[0].text());const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(j)});
+    if(!r.ok)throw 0;const o=await r.json();await db.refresh();toast('Đã nhập '+o.imported+' mục.')}catch{toast('File không đúng định dạng sao lưu.')}e.target.value=''});
+document.addEventListener('input',e=>{if(e.target.id==='wPrice'){const wi=document.getElementById('wImpact');if(wi)wi.innerHTML=impactHtml()}});
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const d=b.dataset;
+  if(d.pay) return togglePay(d.pay);
+  if(d.q!=null){const q=(S.meta?.quick||QUICK_DEFAULT)[Number(d.q)];if(q)addTx({date:todayS(),amount:q.amount,dir:'out',cat:q.cat,note:q.label,src:'app'},'Đã ghi '+q.label+' '+k(q.amount));return}
+  if(d.wish){const n=document.getElementById('wName').value.trim()||'Món chưa đặt tên', pr=Math.round(Number(document.getElementById('wPrice').value)||0);
+    if(!pr) return toast('Nhập giá trước đã.');
+    const now=new Date().toISOString();
+    const ok=await w(()=>db.collection('wishes').add(d.wish==='skip'?{name:n,price:pr,status:'skipped',createdAt:now,decidedAt:now}:{name:n,price:pr,status:'waiting',createdAt:now}));
+    if(ok){document.getElementById('wName').value='';document.getElementById('wPrice').value='';toast(d.wish==='skip'?'Giỏi! '+vnd(pr)+' ở lại trong hũ.':'Đã hẹn 24 giờ. Mai xem còn muốn không nhé.');render()}
+    return}
+  if(d.wskip){const x=S.wishes.find(y=>y.id===d.wskip);if(await w(()=>db.doc('wishes/'+d.wskip).update({status:'skipped',decidedAt:new Date().toISOString()})))toast('Giỏi! '+vnd(x?.price)+' ở lại trong hũ.');return}
+  if(d.wbuy){const x=S.wishes.find(y=>y.id===d.wbuy);if(!x)return;await w(()=>db.doc('wishes/'+x.id).update({status:'bought',decidedAt:new Date().toISOString()}));await addTx({date:todayS(),amount:x.price,dir:'out',cat:'choi',note:x.name,src:'app'},'Đã ghi mua '+x.name);return}
+  if(d.bm){S.bYm=addYm(S.bYm,Number(d.bm));return render()}
+  if(d.tm){S.tYm=addYm(S.tYm,Number(d.tm));return render()}
+  if(d.showall){S.showAll=!S.showAll;return render()}
+  if(d.dir){S.txDir=d.dir;return render()}
+  if(d.askdel){S.confirmDel=d.askdel;return render()}
+  if(d.nodel){S.confirmDel=null;return render()}
+  if(d.del){const id=d.del;S.confirmDel=null;await w(()=>db.doc('txns/'+id).delete());return}
+  if(d.newb){const ym=d.newb, prev=S.budgets[addYm(ym,-1)];
+    const lines=prev?{...prev.lines,duphong:0}:Object.fromEntries(CATS.map(c=>[c.id,0]));
+    await w(()=>db.doc('budgets/'+ym).set({start:prev?(Number(prev.lines?.duphong)||0):0,income:S.meta?.incomeMonthly||0,lines}));return}
+  if(d.fill){const bc=budgetCalc(d.fill);if(!bc)return;const nv=Math.max(0,(Number(bc.b.lines?.duphong)||0)+bc.left);
+    await w(()=>db.doc('budgets/'+d.fill).update({lines:{duphong:Math.round(nv)}}));return}
+});
+document.addEventListener('change',async e=>{
+  const t=e.target, d=t.dataset; const v=Math.max(0,Math.round(Number(t.value)||0));
+  if(d.bl){await w(()=>db.doc('budgets/'+S.bYm).update({lines:{[d.bl]:v}}))}
+  else if(d.bt){await w(()=>db.doc('budgets/'+S.bYm).update({[d.bt]:v}))}
+});
+document.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(e.target.id==='txForm'){
+    const amt=Math.round(Number(document.getElementById('txAmt').value)||0); if(amt<=0) return toast('Nhập số tiền trước đã.');
+    await addTx({date:document.getElementById('txDate').value||todayS(),amount:amt,dir:S.txDir,cat:document.getElementById('txCat').value,note:document.getElementById('txNote').value.trim(),src:'app'},'Đã lưu '+vnd(amt));
+    ['txAmt','txNote'].forEach(id=>{const x=document.getElementById(id);if(x)x.value=''});
+  }
+  if(e.target.id==='fundForm'){
+    const name=document.getElementById('fName').value.trim(), target=Math.round(Number(document.getElementById('fTarget').value)||0), due=document.getElementById('fDue').value.trim();
+    if(!name||!target) return;
+    if(await w(()=>db.collection('funds').add({name,target,due,saved:0,note:''}))){['fName','fTarget','fDue'].forEach(id=>{const x=document.getElementById(id);if(x)x.value=''});toast('Đã thêm hũ '+name)}
+  }
+});
+
+/* ---------- boot ---------- */
+(function init(){const ym=todayS().slice(0,7);S.bYm=ym;S.tYm=ym;show(location.hash.slice(1)||'hom-nay')})();
+/* ---------- kho dữ liệu: gọi API của server (thay cho kho của Claude) ---------- */
+function makeDb(){
+  const store={}, listeners=new Set();
+  const rid=()=>Array.from(crypto.getRandomValues(new Uint8Array(15)),b=>'abcdefghijklmnopqrstuvwxyz0123456789'[b%36]).join('');
+  const meta={fromCache:false,hasPendingWrites:false};
+  const docSnap=(c,id)=>{const d=store[c]&&store[c][id];return {id,exists:!!d,data:()=>d,metadata:meta}};
+  const colSnap=c=>{const docs=Object.keys(store[c]||{}).sort().map(id=>docSnap(c,id));return {docs,size:docs.length,empty:!docs.length,metadata:meta}};
+  const notify=()=>listeners.forEach(l=>{try{l.fire()}catch(e){console.error(e)}});
+  async function call(method,url,body){
+    const r=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,credentials:'same-origin'});
+    if(r.status===401){location.reload();throw {code:'revoked',message:'Cần đăng nhập lại'}}
+    if(!r.ok){let j={};try{j=await r.json()}catch{} throw {code:j.code||'unavailable',message:j.message||('HTTP '+r.status)}}
+    return r.json();
+  }
+  async function refresh(){const j=await call('GET','/api/docs');for(const k in store)delete store[k];Object.assign(store,j.collections||{});notify()}
+  const merge=(a,p)=>{const o={...(a||{})};for(const[k,v]of Object.entries(p||{})){if(v&&typeof v==='object'&&!Array.isArray(v)){if(v.__delete__===true){delete o[k];continue}o[k]=merge(o[k]&&typeof o[k]==='object'&&!Array.isArray(o[k])?o[k]:{},v)}else o[k]=v}return o};
+  function docRef(c,id){
+    const u='/api/docs/'+encodeURIComponent(c)+'/'+encodeURIComponent(id);
+    return {id,path:c+'/'+id,
+      get:async()=>docSnap(c,id),
+      async set(data){(store[c]=store[c]||{})[id]=JSON.parse(JSON.stringify(data));notify();try{await call('PUT',u,data)}catch(e){refresh().catch(()=>{});throw e}},
+      async update(data){if(!store[c]||!store[c][id])throw {code:'invalid_argument',message:'Không có document này'};store[c][id]=merge(store[c][id],data);notify();try{await call('PATCH',u,data)}catch(e){refresh().catch(()=>{});throw e}},
+      async delete(){if(store[c])delete store[c][id];notify();try{await call('DELETE',u)}catch(e){refresh().catch(()=>{});throw e}},
+      onSnapshot(next){const l={fire:()=>next(docSnap(c,id))};listeners.add(l);if(S.loaded)l.fire();return ()=>listeners.delete(l)}};
+  }
+  function colRef(c){
+    return {path:c,
+      doc:id=>docRef(c,id||rid()),
+      async add(data){const r=docRef(c,rid());await r.set(data);return r},
+      get:async()=>colSnap(c),
+      onSnapshot(next){const l={fire:()=>next(colSnap(c))};listeners.add(l);if(S.loaded)l.fire();return ()=>listeners.delete(l)}};
+  }
+  return {doc(p){const[c,id]=p.split('/');return docRef(c,id)},collection:colRef,refresh};
+}
+(async function connect(){
+  const note=document.getElementById('loadNote');
+  db=makeDb(); canWrite=true;
+  const mark=()=>{S.got=1;render()};
+  db.doc('meta/state').onSnapshot(s=>{S.meta=s.exists?s.data():null;mark()});
+  db.collection('debts').onSnapshot(s=>{S.debts=s.docs.map(x=>({id:x.id,...x.data()}));mark()});
+  db.collection('payments').onSnapshot(s=>{const o={};s.docs.forEach(x=>o[x.id]=x.data());S.payments=o;mark()});
+  db.collection('txns').onSnapshot(s=>{S.txns=s.docs.map(x=>({id:x.id,...x.data()}));mark()});
+  db.collection('budgets').onSnapshot(s=>{const o={};s.docs.forEach(x=>o[x.id]=x.data());S.budgets=o;mark()});
+  db.collection('funds').onSnapshot(s=>{S.funds=s.docs.map(x=>({id:x.id,...x.data()}));mark()});
+  db.collection('wishes').onSnapshot(s=>{S.wishes=s.docs.map(x=>({id:x.id,...x.data()}));mark()});
+  const load=async()=>{try{await db.refresh();S.loaded=true;note.hidden=true}catch(e){note.textContent='Chưa tải được dữ liệu từ máy chủ. Kiểm tra mạng rồi tải lại trang.';note.hidden=false}};
+  await load();
+  // Đồng bộ khi mở lại app hoặc mỗi 30 giây (nếu đang mở), không làm mất chữ đang gõ
+  const idle=()=>!document.activeElement?.matches('input,select,textarea');
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+  setInterval(()=>{if(!document.hidden&&idle())load()},30000);
+  setInterval(()=>{if(S.got&&S.view==='hom-nay'&&idle())render()},60000);
+})();
+</script>
+</body>
+</html>
