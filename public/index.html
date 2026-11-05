@@ -200,7 +200,65 @@ nav.tabs .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:re
 nav.tabs a{display:grid;justify-items:center;gap:2px;padding:8px 2px 10px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none}
 nav.tabs a svg{width:22px;height:22px}
 nav.tabs a.on{color:var(--accent)}
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 10px 9px 14px;border-radius:10px;font-size:13.5px;z-index:20;max-width:92vw;display:flex;gap:10px;align-items:center}
+
+/* tappable surfaces + detail sheet */
+.hero{border:0;width:100%;text-align:left;font-weight:400;cursor:pointer}
+.hero .more,.lvcard .more{font-size:12.5px;opacity:.8;font-weight:600;margin-top:6px;text-align:left}
+button.stat{font-weight:400;cursor:pointer;width:100%}
+button.day{background:transparent;border:0;padding:0;font-weight:400;color:var(--muted);cursor:pointer}
+button.lvcard{border:0;width:100%;text-align:left;font-weight:400;cursor:pointer;color:#eaf6f1}
+.nextms{width:100%;text-align:left;border-color:var(--gold);display:grid;gap:4px;font-weight:400;cursor:pointer}
+button.ms{border:0;background:transparent;padding:0 0 16px;width:100%;font-weight:400;text-align:left;cursor:pointer;color:inherit;border-radius:0}
+button.badge{border:0;font-weight:400;cursor:pointer;width:100%}
+.badge .mini{width:70%;height:4px;border-radius:9px;background:rgba(0,0,0,.08);overflow:hidden;margin-top:2px}
+.badge .mini i{display:block;height:100%;background:var(--gold)}
+.badge.on .mini{display:none}
+.item.rowbtn{width:100%;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;padding:11px 0;font-weight:400;text-align:left;cursor:pointer;color:inherit}
+.item.rowbtn:first-child{border-top:0}
+.chev{color:var(--muted);font-size:18px;line-height:1}
+.linkish{background:transparent;border:0;padding:0;font-weight:inherit;text-align:left;color:inherit;cursor:pointer;border-radius:4px}
+.main.linkish{flex:1;min-width:0}
+.bline .nm.linkish{color:var(--accent);font-weight:600}
+button.crow{border:0;background:transparent;padding:3px 0;width:100%;font-weight:400;text-align:left;cursor:pointer;color:inherit}
+.jtabs button{font-size:13.5px;padding:8px 4px}
+.jtabs small{opacity:.6;font-weight:500}
+.dot{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px;font-weight:800;background:var(--sunk);color:var(--muted)}
+.dot.ok{background:var(--good-soft);color:var(--good)}
+.dot.over{background:var(--bad-soft);color:var(--bad)}
+.dot.gold{background:var(--gold);color:var(--surface)}
+.lvrow.now{background:var(--gold-soft);border-radius:10px;padding-inline:8px}
+.neg{color:var(--bad)!important}.pos{color:var(--good)!important}
+.sheet{position:fixed;inset:0;z-index:30}
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet-panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;max-height:88dvh;max-width:620px;margin:0 auto;background:var(--surface);border-radius:20px 20px 0 0;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:8px auto 0;flex:none}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:10px 8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));flex:none}
+.sheet-head h3{font-size:18px;min-width:0}
+#sheetBody{overflow-y:auto;padding-block:2px 22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:10px;align-content:start;overscroll-behavior:contain}
+#sheetBody h4{margin:6px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+#sheetBody .note{margin:0}
+.sheet-big{font-family:var(--f-disp);font-weight:800;font-size:30px;line-height:1.1}
+.kvs{background:var(--bg);border-radius:12px;padding:2px 12px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.kv:first-child{border-top:0}
+.kv span{color:var(--muted)}
+.kv b{text-align:right}
+.verdict{border-radius:10px;padding:10px 12px;font-weight:600;background:var(--sunk)}
+.verdict.ok{background:var(--good-soft);color:var(--good)}
+.verdict.over{background:var(--bad-soft);color:var(--bad)}
+.verdict.gold{background:var(--gold-soft);color:var(--gold-ink)}
+.empty.sm{padding:10px}
+.badge-hero{display:grid;place-items:center;width:96px;height:96px;margin:4px auto 0;border-radius:50%;background:var(--sunk);font-size:48px}
+.badge-hero span{filter:grayscale(1);opacity:.45}
+.badge-hero.on{background:var(--gold-soft)}
+.badge-hero.on span{filter:none;opacity:1}
+details.fold summary{cursor:pointer;list-style:none}
+details.fold summary::-webkit-details-marker{display:none}
+details.fold summary h3::after{content:" ›";color:var(--muted)}
+details.fold[open] summary h3::after{content:" ⌄"}
+details.fold[open] summary{margin-bottom:6px}
+@media (prefers-reduced-motion:no-preference){.sheet-panel{animation:sheetup .22s ease}@keyframes sheetup{from{transform:translateY(40px);opacity:.5}}}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 10px 9px 14px;border-radius:10px;font-size:13.5px;z-index:40;max-width:92vw;display:flex;gap:10px;align-items:center}
 #toast button{background:transparent;border:0;color:var(--gold);padding:2px 6px}
 @media (prefers-reduced-motion:no-preference){.xp i,.bar i,.hero .ring circle{transition:width .5s ease,stroke-dashoffset .6s ease}}
 </style>
@@ -219,6 +277,8 @@ nav.tabs a.on{color:var(--accent)}
   <section class="view" id="v-ngan-sach" hidden></section>
   <section class="view" id="v-ghi-chep" hidden></section>
 </div>
+
+<div id="sheet" class="sheet" hidden><div class="sheet-bg" data-close></div><div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="grab" aria-hidden="true"></div><div class="sheet-head"><h3 id="sheetTitle"></h3><button type="button" id="sheetClose" class="sm" data-close aria-label="Đóng">✕</button></div><div id="sheetBody"></div></div></div>
 
 <nav class="tabs" aria-label="Các mục"><div class="in">
   <a href="#hom-nay" data-v="hom-nay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Hôm nay</a>
@@ -257,7 +317,7 @@ const WD=['CN','T2','T3','T4','T5','T6','T7'];
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>';
 const catName=id=>{if(id&&id.startsWith('f_')){const f=S.funds.find(x=>'f_'+x.id===id);return f?('Quỹ '+f.name):'Quỹ'}return (CATS.find(c=>c.id===id)||INCATS.find(c=>c.id===id)||{name:id||'Khác'}).name};
 
-const S={loaded:false,meta:null,debts:[],payments:{},txns:[],budgets:{},funds:[],wishes:[],got:0,view:'hom-nay',bYm:null,tYm:null,txDir:'out',showAll:false,confirmDel:null};
+const S={loaded:false,meta:null,debts:[],payments:{},txns:[],budgets:{},funds:[],wishes:[],got:0,view:'hom-nay',bYm:null,tYm:null,txDir:'out',showAll:false,confirmDel:null,jTab:'moc',sheet:null};
 let db=null, canWrite=false;
 
 /* ---------- money logic ---------- */
@@ -333,19 +393,24 @@ const hourly=()=>(S.meta?.incomeMonthly||18000000)/26/8;
 
 /* milestones & badges */
 function milestones(){
-  const t=todayS(), list=[];
+  const list=[];
   const closed=S.debts.filter(d=>d.closed);
-  list.push({t:'Tất toán các khoản lãi cao nhất',s:closed.map(d=>d.name.split(' ')[0]+' '+(d.name.match(/\d+tr/)||[''])[0]).join(', '),done:closed.length>=3,ym:'2026-11'});
+  list.push({t:'Tất toán các khoản lãi cao nhất',s:closed.length>=3?closed.length+' khoản đã xóa sổ':'Còn '+(3-closed.length)+' khoản',done:closed.length>=3,ym:'2026-11',
+    desc:'Trả dứt các khoản vay lãi 48–80%/năm bằng tiền mượn không lãi.',closedList:closed});
   const groups={};
   appDebts().forEach(d=>{const g=d.app==='Shopee'?'Shopee':d.id;(groups[g]=groups[g]||[]).push(d)});
   for(const g in groups){const ds=groups[g];const last=ds.map(lastYm).sort().pop();const rem=ds.reduce((s,d)=>s+remainingOf(d),0);
-    list.push({t:g==='Shopee'?'Xóa sổ Shopee (SEasy, SPayLater)':'Xong '+ds[0].name,s:rem?'Còn '+vnd(rem):'Đã trả hết',done:rem===0,ym:last})}
+    list.push({t:g==='Shopee'?'Xóa sổ Shopee':'Xong '+ds[0].name,s:rem?'Còn '+vnd(rem):'Đã trả hết',done:rem===0,ym:last,ds,
+      desc:g==='Shopee'?'Trả hết SEasy và SPayLater.':'Trả kỳ cuối của '+ds[0].name+'.'})}
   const appAll=appDebts().filter(d=>d.id!=='homecredit');
   const appLast=appAll.map(lastYm).sort().pop()||'2027-10';
-  list.push({t:'Hết sạch nợ app lãi cao',s:'Chỉ còn Home Credit và cậu mợ',done:appAll.every(d=>remainingOf(d)===0),ym:appLast,big:true});
-  const f=family(); if(f){const r=remainingOf(f);list.push({t:'Trả xong cậu mợ',s:r?'Còn '+vnd(r)+' · dự kiến khi dồn ~8tr/tháng':'Đã trả hết',done:r===0,ym:addYm(appLast,Math.ceil(r/8e6)||0),est:true})}
+  list.push({t:'Hết sạch nợ app lãi cao',s:'Chỉ còn Home Credit và cậu mợ',done:appAll.every(d=>remainingOf(d)===0),ym:appLast,big:true,ds:appAll,
+    desc:'Mọi khoản app và thẻ (trừ Home Credit) về 0. Từ đây mỗi tháng bắt đầu dư nhiều.'});
+  const f=family(); if(f){const r=remainingOf(f);list.push({t:'Trả xong cậu mợ',s:r?'Còn '+vnd(r):'Đã trả hết',done:r===0,ym:addYm(appLast,Math.ceil(r/8e6)||0),est:true,ds:[f],
+    desc:'Ước tính nếu mỗi tháng dồn khoảng 8tr sau khi hết nợ app. Ghi giao dịch mục "Trả cậu mợ" để trừ dần.'})}
   const kc=S.funds.find(x=>/khẩn|khan/i.test(x.name));
-  list.push({t:'Quỹ khẩn cấp 30tr của riêng mình',s:kc?tr(fundSaved(kc))+' / '+tr(kc.target):'Lập khi các khoản app xong',done:kc?fundSaved(kc)>=kc.target:false,ym:addYm(appLast,4),est:true});
+  list.push({t:'Quỹ khẩn cấp 30tr',s:kc?tr(fundSaved(kc))+' / '+tr(kc.target):'Chưa lập hũ',done:kc?fundSaved(kc)>=kc.target:false,ym:addYm(appLast,4),est:true,
+    desc:'Khoản tiền của riêng bạn, đủ sống 2–3 tháng. Có nó rồi thì lúc kẹt không phải tìm đến app vay nữa.'});
   list.sort((a,b)=>a.done!==b.done?(a.done?-1:1):(a.ym<b.ym?-1:a.ym>b.ym?1:0));
   const ni=list.findIndex(m=>!m.done); if(ni>=0) list[ni].next=true;
   return list;
@@ -357,24 +422,25 @@ function badges(){
   const tet=S.funds.find(f=>/tết|tet/i.test(f.name));
   const tp=S.debts.find(d=>d.id==='tpbank');
   const lv=level();
-  const B=(em,n,on,p)=>({em,n,on,p});
+  const B=(em,n,cur,target,desc,unit)=>({em,n,cur:Math.max(0,Math.min(cur,target)),target,on:cur>=target,desc,unit:unit||''});
   return [
-    B('✂️','Cắt lãi cắt cổ',closed>=3,closed+'/3 khoản'),
-    B('🌱','7 ngày không vay',nl>=7,Math.min(nl,7)+'/7 ngày'),
-    B('🛡️','1 tháng sạch nợ mới',nl>=30,Math.min(nl,30)+'/30 ngày'),
-    B('🏯','100 ngày tự chủ',nl>=100,Math.min(nl,100)+'/100'),
-    B('🔥','Tuần giữ mức',st.best>=7,Math.min(st.best,7)+'/7 ngày'),
-    B('🌕','Tháng giữ mức',st.best>=30,Math.min(st.best,30)+'/30'),
-    B('⏰','Trả đúng hạn ×5',onTime>=5,Math.min(onTime,5)+'/5 kỳ'),
-    B('🏅','Trả đúng hạn ×20',onTime>=20,Math.min(onTime,20)+'/20'),
-    B('🙅','Nói "không" lần đầu',sk.length>=1,sk.length?'Đã bỏ '+sk.length+' món':'Chưa có'),
-    B('💪','Từ chối 1 triệu',skT>=1e6,k(Math.min(skT,1e6))+'/1tr'),
-    B('💳','Hết nợ thẻ',tp?remainingOf(tp)===0:false,tp?(remainingOf(tp)?'Còn '+k(remainingOf(tp)):'Xong'):''),
-    B('🧧','Đủ quỹ Tết',tet?fundSaved(tet)>=tet.target:false,tet?k(fundSaved(tet))+'/'+k(tet.target):'Chưa lập'),
-    B('📒','Ghi chép 30 lần',S.txns.length>=30,Math.min(S.txns.length,30)+'/30'),
-    B('⛰️','Nửa đường',lv.p>=.5,Math.round(lv.p*100)+'/50%'),
+    B('✂️','Cắt lãi cắt cổ',closed,3,'Tất toán 3 khoản vay lãi cao nhất.',' khoản'),
+    B('🌱','7 ngày không vay',nl,7,'7 ngày liên tục không mở khoản vay mới nào.',' ngày'),
+    B('🛡️','1 tháng sạch nợ mới',nl,30,'30 ngày liên tục không vay mới.',' ngày'),
+    B('🏯','100 ngày tự chủ',nl,100,'100 ngày liên tục không vay mới.',' ngày'),
+    B('🔥','Tuần giữ mức',st.best,7,'7 ngày liên tiếp tiêu ăn uống và tiêu thoải mái không vượt mức ngày.',' ngày'),
+    B('🌕','Tháng giữ mức',st.best,30,'30 ngày liên tiếp giữ mức ngày.',' ngày'),
+    B('⏰','Trả đúng hạn ×5',onTime,5,'5 kỳ nợ được đánh dấu trả trước hoặc đúng ngày hạn.',' kỳ'),
+    B('🏅','Trả đúng hạn ×20',onTime,20,'20 kỳ nợ trả đúng hạn.',' kỳ'),
+    B('🙅','Nói "không" lần đầu',sk.length,1,'Bỏ qua một món ở thẻ "Muốn mua gì à?" trang Hôm nay.',' món'),
+    B('💪','Từ chối 1 triệu',skT,1e6,'Tổng tiền các món đã bỏ qua đạt 1 triệu.','đ'),
+    B('💳','Hết nợ thẻ',tp&&remainingOf(tp)===0?1:0,1,'Trả hết dư nợ thẻ TPBank, đánh dấu ở Lịch trả.',''),
+    B('🧧','Đủ quỹ Tết',tet?fundSaved(tet):0,tet?tet.target:1,tet?'Hũ "'+tet.name+'" đủ tiền mục tiêu.':'Lập hũ Tết ở trang Ngân sách.','đ'),
+    B('📒','Ghi chép 30 lần',S.txns.length,30,'Ghi 30 giao dịch vào sổ.',' lần'),
+    B('⛰️','Nửa đường',Math.round(lv.p*100),50,'Đi được 50% hành trình: nợ ròng còn một nửa so với lúc bắt đầu.','%'),
   ];
 }
+const bval=(b,v)=>b.unit==='đ'?k(v):v+b.unit;
 
 /* ---------- writes ---------- */
 async function w(fn){ if(!db||!canWrite) return false; try{ await fn(); return true }catch(e){ toast(e&&e.code==='invalid_argument'?'Bạn không có quyền sửa sổ này.':'Chưa lưu được, thử lại nhé.'); if(e&&e.code==='invalid_argument'){canWrite=false;render()} return false } }
@@ -388,6 +454,107 @@ async function togglePay(key){
 }
 async function addTx(doc,msg){const ref=db.collection('txns').doc();if(await w(()=>ref.set(doc)))toast(msg,()=>w(()=>ref.delete()))}
 
+/* ---------- detail sheets ---------- */
+let ROW_COMPACT=false;
+const sh=(kind,arg)=>`data-sheet="${kind}"${arg!=null?` data-arg="${esc(arg)}"`:''}`;
+const dayName=d=>['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'][D(d).getDay()]+', '+dd(d)+'/'+mm(d);
+const kv=(a,b,cls)=>`<div class="kv"><span>${a}</span><b${cls?` class="${cls}"`:''}>${b}</b></div>`;
+const txRow=t=>`<div class="item"><div class="main"><div class="t">${esc(catName(t.cat))}</div>${t.note?`<div class="s">${esc(t.note)}</div>`:''}</div><span class="amt" style="color:${t.dir==='in'?'var(--good)':'var(--ink)'}">${t.dir==='in'?'+':'−'}${vnd(t.amount)}</span></div>`;
+function sheetDay(d){
+  const t=todayS();
+  if(d<trackStart()) return {title:dayName(d),body:'<div class="empty">Sổ bắt đầu theo dõi từ '+dd(trackStart())+'/'+mm(trackStart())+'. Ngày này chưa có dữ liệu.</div>'};
+  const a=allowance(d.slice(0,7)), sp=flexSpent(d), txs=S.txns.filter(x=>x.date===d);
+  const flex=txs.filter(x=>x.dir==='out'&&FLEX.includes(x.cat)), other=txs.filter(x=>!(x.dir==='out'&&FLEX.includes(x.cat)));
+  const pays=Object.entries(S.payments).filter(([,p])=>p.paidAt===d).map(([key,p])=>({key,p,it:items().find(i=>i.key===key)}));
+  const due=items().filter(i=>i.date===d);
+  const diff=a==null?null:a-sp;
+  const verdict=a==null?'':d===t?(diff>=0?`<div class="verdict ok">Còn ${vnd(diff)}. Giữ đến tối là vào hũ.</div>`:`<div class="verdict over">Đang vượt ${vnd(-diff)}.</div>`)
+    :(diff>=0?`<div class="verdict ok">✓ Giữ mức. +${vnd(diff)} vào hũ.</div>`:`<div class="verdict over">! Vượt mức ${vnd(-diff)}. Hũ bị trừ, chuỗi về 0.</div>`);
+  return {title:dayName(d)+(d===t?' (hôm nay)':''),body:`${verdict}
+    <div class="kvs">${kv('Mức ngày',a==null?'—':vnd(a))}${kv('Đã tiêu (ăn, tiêu thoải mái)',vnd(sp),diff!=null&&diff<0?'neg':'')}</div>
+    <h4>Tính vào mức ngày</h4><div class="list">${flex.length?flex.map(txRow).join(''):'<div class="empty sm">Không có khoản nào.</div>'}</div>
+    ${other.length?`<h4>Khoản khác trong ngày</h4><p class="note">Không tính vào mức ngày (xăng, hiếu hỉ, tiền vào...).</p><div class="list">${other.map(txRow).join('')}</div>`:''}
+    ${pays.length?`<h4>Trả nợ trong ngày</h4><div class="list">${pays.map(x=>`<div class="item"><div class="main"><div class="t">${esc(x.it?x.it.debt.name:x.p.debtId)}</div><div class="s">Kỳ ${x.p.ym.slice(5)}/${x.p.ym.slice(0,4)}</div></div><span class="amt">−${vnd(x.p.amount)}</span></div>`).join('')}</div>`:''}
+    ${due.length?`<h4>Đến hạn ngày này</h4><div class="list">${due.map(itemRow).join('')}</div>`:''}`};
+}
+function sheetJar(){
+  const t=todayS(), ym=t.slice(0,7), p=period(ym), a=allowance(ym), jr=jar(ym), rows=[];
+  if(a!=null) for(let d=p.start; d<=p.end && d<t; d=addDay(d,1)) rows.push({d,v:a-flexSpent(d)});
+  const sk=S.wishes.filter(x=>x.status==='skipped'&&(x.decidedAt||x.createdAt||'').slice(0,7)===ym);
+  return {title:'Hũ '+mName(ym).toLowerCase(),body:`<div class="sheet-big">${vnd(Math.max(0,jr.total))}</div>
+    <p class="note">Mỗi ngày tiêu ít hơn mức (${a!=null?vnd(a):'—'}) thì phần dư rơi vào hũ, ngày vượt thì hũ bị trừ. Món bỏ qua ở "Muốn mua gì à?" cũng được cộng vào.</p>
+    <div class="kvs">${kv('Từ các ngày giữ mức',(jr.daily>=0?'+':'')+vnd(jr.daily),jr.daily<0?'neg':'pos')}${kv('Từ món đã bỏ qua','+'+vnd(jr.skipped),'pos')}</div>
+    <h4>Từng ngày</h4><div class="list">${rows.length?rows.reverse().map(r=>`<button class="item rowbtn" ${sh('day',r.d)}><div class="main"><div class="t">${dayName(r.d)}</div></div><span class="amt ${r.v<0?'neg':'pos'}">${r.v>=0?'+':'−'}${vnd(Math.abs(r.v))}</span><span class="chev">›</span></button>`).join(''):'<div class="empty sm">Chưa có ngày nào kết thúc.</div>'}</div>
+    ${sk.length?`<h4>Món đã bỏ qua</h4><div class="list">${sk.map(x=>`<div class="item"><div class="main"><div class="t">${esc(x.name)}</div></div><span class="amt pos">+${vnd(x.price)}</span></div>`).join('')}</div>`:''}`};
+}
+function sheetStreak(){
+  const st=streaks(), t=todayS(), days=[];
+  for(let i=1;i<=14;i++){const d=addDay(t,-i);if(d<trackStart())break;days.push({d,ok:dayOk(d)})}
+  return {title:'Chuỗi ngày giữ mức',body:`<div class="kvs">${kv('Đang có',st.cur+' ngày')}${kv('Kỷ lục',st.best+' ngày')}</div>
+    <p class="note">Một ngày "giữ mức" là ngày tiền ăn uống và tiêu thoải mái không vượt mức ngày. Vượt một ngày là chuỗi về 0. Hôm nay chỉ được tính khi qua ngày.</p>
+    <h4>14 ngày gần nhất</h4><div class="list">${days.length?days.map(x=>`<button class="item rowbtn" ${sh('day',x.d)}><span class="dot ${x.ok?'ok':x.ok===false?'over':''}">${x.ok?'✓':x.ok===false?'!':'·'}</span><div class="main"><div class="t">${dayName(x.d)}</div><div class="s">Tiêu ${vnd(flexSpent(x.d))}</div></div><span class="chev">›</span></button>`).join(''):'<div class="empty sm">Chưa có ngày nào.</div>'}</div>`};
+}
+function sheetNoLoan(){
+  const nl=noLoanDays(), since=S.meta?.noNewLoanSince||trackStart();
+  const steps=[7,30,100,365];
+  return {title:'Ngày không vay mới',body:`<div class="sheet-big">${nl} ngày</div><p class="note">Tính từ ${dd(since)}/${mm(since)}/${since.slice(0,4)}. Mở bất kỳ khoản vay mới nào (app, thẻ, trả sau) thì đếm lại từ 0. Đây là luật quan trọng nhất.</p>
+    <h4>Các mốc</h4><div class="list">${steps.map(s=>`<div class="item"><span class="dot ${nl>=s?'ok':''}">${nl>=s?'✓':''}</span><div class="main"><div class="t">${s} ngày</div><div class="s">${nl>=s?'Đã đạt':'Còn '+(s-nl)+' ngày, tới '+(()=>{const d=addDay(since,s);return dd(d)+'/'+mm(d)+'/'+d.slice(0,4)})()}</div><div class="bar"><i style="width:${Math.min(100,nl/s*100)}%"></i></div></div></div>`).join('')}</div>`};
+}
+function sheetLevels(){
+  const lv=level();
+  return {title:'Các cấp độ',body:`<p class="note">Cấp độ đo nợ ròng (tổng nợ trừ tiền đang có và các hũ) giảm được bao nhiêu so với lúc bắt đầu (${tr(lv.start)}). Kiếm vào thì nợ ròng giảm, tiêu ra thì tăng.</p>
+    <div class="list">${LEVELS.map((l,i)=>{const at=lv.start*(1-l[0]);const state=i+1<lv.i?'done':i+1===lv.i?'now':'';
+      return `<div class="item lvrow ${state}"><span class="dot ${state==='done'?'ok':state==='now'?'gold':''}">${i+1}</span><div class="main"><div class="t">${esc(l[1])}${state==='now'?' · bạn đang ở đây':''}</div><div class="s">${i===0?'Điểm xuất phát':l[0]>=1?'Nợ ròng về 0':'Khi nợ ròng còn '+tr(at)}${state===''&&l[0]<1?' · còn bớt '+tr(Math.max(0,lv.net-at)):''}${state===''&&l[0]>=1?' · còn bớt '+tr(Math.max(0,lv.net)):''}</div></div></div>`}).join('')}</div>
+    <div class="kvs">${kv('Nợ ròng hiện tại',vnd(Math.max(0,lv.net)))}${kv('Đã đi được',Math.round(lv.p*100)+'%')}</div>`};
+}
+function sheetMilestone(i){
+  const m=milestones()[Number(i)]; if(!m) return {title:'Mốc',body:''};
+  const ds=(m.ds||[]).filter(Boolean);
+  return {title:m.t,body:`<div class="verdict ${m.done?'ok':m.next?'gold':''}">${m.done?'✓ Đã đạt':(m.next?'Mốc tiếp theo · ':'')+(m.est?'Dự kiến ':'')+mName(m.ym).toLowerCase()}</div>
+    <p class="note">${esc(m.desc||'')}</p>
+    ${m.closedList?`<h4>Đã xóa sổ</h4><div class="list">${m.closedList.map(d=>`<div class="item"><span class="dot ok">✓</span><div class="main"><div class="t">${esc(d.name)}</div><div class="s">${esc(d.note||'')}</div></div></div>`).join('')}</div>`:''}
+    ${ds.length?`<h4>Khoản liên quan</h4><div class="list">${ds.map(d=>{const r=remainingOf(d);return `<button class="item rowbtn" ${sh('debt',d.id)}><div class="main"><div class="t">${esc(d.name)}</div><div class="s">${r?'Còn '+vnd(r):'Đã trả hết'}${d.last?' · xong '+mShort(d.last):''}</div></div><span class="chev">›</span></button>`}).join('')}</div>`:''}`};
+}
+function sheetBadge(i){
+  const b=badges()[Number(i)]; if(!b) return {title:'Huy hiệu',body:''};
+  return {title:b.n,body:`<div class="badge-hero ${b.on?'on':''}"><span>${b.em}</span></div>
+    <div class="verdict ${b.on?'ok':''}" style="text-align:center">${b.on?'Đã mở khóa':'Chưa mở khóa'}</div>
+    <h4>Cách mở</h4><p style="margin:0">${esc(b.desc)}</p>
+    <h4>Tiến độ</h4><div class="kvs">${kv('Hiện có',bval(b,b.cur)+' / '+bval(b,b.target))}</div><div class="bar" style="height:10px"><i style="width:${Math.min(100,b.cur/b.target*100)}%;background:var(--gold)"></i></div>`};
+}
+function sheetDebt(id){
+  const d=S.debts.find(x=>x.id===id); if(!d) return {title:'Khoản nợ',body:''};
+  if(d.kind==='family'){const back=S.txns.filter(t=>t.dir==='out'&&t.cat==='caumo');
+    return {title:d.name,body:`<div class="sheet-big">${vnd(remainingOf(d))}</div><p class="note">${esc(d.note||'')} Không lãi.</p>
+      <h4>Đã trả</h4><div class="list">${back.length?back.map(txRow).join(''):'<div class="empty sm">Chưa trả lần nào. Ghi giao dịch mục "Trả cậu mợ" để trừ dần.</div>'}</div>`}}
+  const sc=schedule(d), left=sc.filter(i=>!i.paid), r=left.reduce((s,i)=>s+i.amount,0);
+  return {title:d.name,body:`<div class="sheet-big">${vnd(r)}</div><div class="prog" style="margin:0 0 12px">${sc.map(i=>`<i class="${i.paid?'p':''}"></i>`).join('')}</div>
+    <div class="kvs">${kv('Bên cho vay',esc(d.app||'—'))}${d.rate?kv('Lãi',esc(d.rate)):''}${kv('Mỗi kỳ',vnd(d.monthly)+' · ngày '+d.day)}${kv('Còn lại',left.length+' / '+sc.length+' kỳ')}${sc.length?kv('Kỳ cuối',mName(sc[sc.length-1].ym).toLowerCase()):''}</div>
+    ${d.note?`<p class="note">${esc(d.note)}</p>`:''}
+    <h4>Lịch từng kỳ</h4><div class="list">${(ROW_COMPACT=true,sc.map(itemRow).join(''))}</div>`};
+}
+function sheetMonth(ym){
+  const its=monthDebt(ym), tot=its.reduce((s,i)=>s+i.amount,0), paid=its.filter(i=>i.paid).reduce((s,i)=>s+i.amount,0);
+  return {title:'Trả nợ '+mName(ym).toLowerCase(),body:`<div class="kvs">${kv('Tổng',vnd(tot))}${kv('Đã trả',vnd(paid),'pos')}${kv('Còn',vnd(tot-paid))}</div>
+    <div class="list">${its.length?its.map(itemRow).join(''):'<div class="empty sm">Tháng này không có kỳ nào.</div>'}</div>`};
+}
+function sheetCat(arg){
+  const [ym,cat]=arg.split('|'), b=S.budgets[ym], pl=Number(b?.lines?.[cat])||0, txs=S.txns.filter(t=>t.dir==='out'&&t.cat===cat&&t.date.slice(0,7)===ym).sort((a,c)=>a.date<c.date?1:-1), s=txs.reduce((x,t)=>x+t.amount,0);
+  return {title:catName(cat)+' · '+mShort(ym),body:`<div class="kvs">${kv('Dự kiến',vnd(pl))}${kv('Đã chi',vnd(s),s>pl?'neg':'')}${kv('Còn',vnd(pl-s),pl-s<0?'neg':'pos')}</div>
+    <div class="list">${txs.length?txs.map(t=>`<div class="item"><div class="date"><b>${dd(t.date)}</b><span>Th${mm(t.date)}</span></div><div class="main"><div class="t">${esc(t.note||catName(t.cat))}</div></div><span class="amt">−${vnd(t.amount)}</span></div>`).join(''):'<div class="empty sm">Chưa có khoản chi nào.</div>'}</div>`};
+}
+const SHEETS={day:sheetDay,jar:sheetJar,streak:sheetStreak,noloan:sheetNoLoan,levels:sheetLevels,ms:sheetMilestone,badge:sheetBadge,debt:sheetDebt,month:sheetMonth,cat:sheetCat};
+function openSheet(kind,arg){S.sheet={kind,arg};renderSheet(true)}
+function closeSheet(){S.sheet=null;const el=document.getElementById('sheet');el.hidden=true;document.body.style.overflow=''}
+function renderSheet(fresh){
+  const el=document.getElementById('sheet'); if(!S.sheet||!SHEETS[S.sheet.kind]){if(el)el.hidden=true;return}
+  const r=SHEETS[S.sheet.kind](S.sheet.arg); ROW_COMPACT=false;
+  document.getElementById('sheetTitle').textContent=r.title;
+  const body=document.getElementById('sheetBody'), top=body.scrollTop;
+  body.innerHTML=r.body; el.hidden=false; document.body.style.overflow='hidden';
+  if(fresh){body.scrollTop=0;document.getElementById('sheetClose').focus({preventScroll:true})}else body.scrollTop=top;
+}
+
 /* ---------- views ---------- */
 function vToday(){
   const t=todayS(), ym=t.slice(0,7), a=allowance(ym), sp=flexSpent(t), st=streaks(), jr=jar(ym), nl=noLoanDays();
@@ -398,21 +565,20 @@ function vToday(){
   else{
     const left=a-sp, pct=Math.min(1,sp/a), C=2*Math.PI*50;
     const msg=left>=0?`Giữ được thì <b>${vnd(left)}</b> rơi vào hũ tối nay.`:`Vượt ${vnd(-left)}. Mai bớt một chút là cân lại.`;
-    hero=`<div class="hero"><div class="ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="12"/><circle cx="60" cy="60" r="50" fill="none" stroke="${left>=0?'#f3d58f':'#ffb3a8'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/></svg><div class="c"><div><b>${k(sp)}</b><span>đã tiêu<br>/ ${k(a)}</span></div></div></div>
-    <div><div class="k">Hôm nay còn được tiêu</div><div class="left">${left>=0?vnd(left):'−'+vnd(-left)}</div><div class="msg">${msg}</div></div></div>`;
+    hero=`<button class="hero" ${sh('day',t)} aria-label="Xem chi tiết hôm nay"><div class="ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="12"/><circle cx="60" cy="60" r="50" fill="none" stroke="${left>=0?'#f3d58f':'#ffb3a8'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/></svg><div class="c"><div><b>${k(sp)}</b><span>đã tiêu<br>/ ${k(a)}</span></div></div></div>
+    <div><div class="k">Hôm nay còn được tiêu</div><div class="left">${left>=0?vnd(left):'−'+vnd(-left)}</div><div class="msg">${msg}</div><div class="more">Xem các khoản hôm nay ›</div></div></button>`;
   }
-  // last 7 days strip
   const days=[];for(let i=6;i>=0;i--){const d=addDay(t,-i);const ok=d<trackStart()?null:(d===t?null:dayOk(d));days.push({d,ok})}
   return `
   ${overdue.length?`<div class="banner"><b>${overdue.length} khoản quá hạn chưa đánh dấu:</b> ${overdue.map(i=>esc(i.debt.name)).join(', ')}. Trả rồi thì tích ở Lịch trả.</div>`:''}
   ${hero}
   <div class="stats">
-    <div class="stat gold"><span class="ico">🫙</span><span class="v">${k(Math.max(0,jr.total))}</span><span class="t">Hũ tháng này giữ lại được</span></div>
-    <div class="stat"><span class="ico">🔥</span><span class="v">${st.cur}</span><span class="t">Ngày liên tiếp giữ mức · kỷ lục ${st.best}</span></div>
-    <div class="stat"><span class="ico">🌱</span><span class="v">${nl}</span><span class="t">Ngày không vay khoản mới</span></div>
+    <button class="stat gold" ${sh('jar')}><span class="ico">🫙</span><span class="v">${k(Math.max(0,jr.total))}</span><span class="t">Hũ tháng này giữ lại được</span></button>
+    <button class="stat" ${sh('streak')}><span class="ico">🔥</span><span class="v">${st.cur}</span><span class="t">Ngày liên tiếp giữ mức · kỷ lục ${st.best}</span></button>
+    <button class="stat" ${sh('noloan')}><span class="ico">🌱</span><span class="v">${nl}</span><span class="t">Ngày không vay khoản mới</span></button>
   </div>
-  <div class="card"><div class="row" style="margin-bottom:10px"><h3>7 ngày qua</h3><span class="note">Xanh là giữ mức</span></div>
-    <div class="week">${days.map(x=>`<div class="day ${x.d===t?'today':''} ${x.ok===true?'ok':x.ok===false?'over':''}"><i>${x.ok===true?'✓':x.ok===false?'!':x.d===t?'•':''}</i>${WD[D(x.d).getDay()]} ${dd(x.d)}</div>`).join('')}</div></div>
+  <div class="card"><div class="row" style="margin-bottom:10px"><h3>7 ngày qua</h3><span class="note">Chạm từng ngày để xem</span></div>
+    <div class="week">${days.map(x=>`<button class="day ${x.d===t?'today':''} ${x.ok===true?'ok':x.ok===false?'over':''}" ${sh('day',x.d)} aria-label="${dayName(x.d)}"><i>${x.ok===true?'✓':x.ok===false?'!':x.d===t?'•':''}</i>${WD[D(x.d).getDay()]} ${dd(x.d)}</button>`).join('')}</div></div>
   ${canWrite?`<div class="card"><div class="row" style="margin-bottom:10px"><h3>Ghi nhanh một chạm</h3><a href="#ghi-chep" style="font-size:13px;font-weight:600;color:var(--accent)">Khoản khác</a></div>
     <div class="quick">${quick.map((q,i)=>`<button class="qbtn" data-q="${i}">${esc(q.label)}<span>${k(q.amount)}</span></button>`).join('')}</div></div>`:''}
   ${vWish()}
@@ -439,33 +605,37 @@ function impactHtml(){
 }
 function itemRow(i){
   const t=todayS(), dl=diffDays(t,i.date); const st=i.paid?'<span class="pill good">Đã trả</span>':i.date<t?'<span class="pill bad">Quá hạn</span>':(dl<=3?'<span class="pill warn">'+(dl===0?'Hôm nay':'Còn '+dl+' ngày')+'</span>':'');
+  const inDebt=ROW_COMPACT;
   return `<div class="item"><div class="date"><b>${dd(i.date)}</b><span>Th${mm(i.date)}</span></div>
-  <div class="main"><div class="t">${esc(i.debt.name)}</div><div class="s">${esc(i.debt.app||'')}${i.debt.note?' · '+esc(i.debt.note):''}</div></div>
+  ${inDebt?`<div class="main"><div class="t">Kỳ ${mShort(i.ym)}</div></div>`:`<button class="main linkish" ${sh('debt',i.debt.id)}><div class="t">${esc(i.debt.name)}</div><div class="s">${esc(i.debt.app||'')}${i.debt.note?' · '+esc(i.debt.note):''}</div></button>`}
   <div style="display:grid;justify-items:end;gap:3px"><span class="amt">${vnd(i.amount)}</span>${st}</div>
   ${canWrite?`<button class="chk ${i.paid?'on':''}" data-pay="${esc(i.key)}" aria-label="${i.paid?'Bỏ đánh dấu đã trả':'Đánh dấu đã trả'} ${esc(i.debt.name)}">${i.paid?CHECK:''}</button>`:''}</div>`;
 }
 
 function vJourney(){
   const lv=level(), ms=milestones(), bs=badges(), ym=todayS().slice(0,7), all=items();
-  const nx=ms.find(m=>m.next);
-  const months=[];for(let i=0;i<12;i++){const m=addYm(ym,i);months.push({m,v:all.filter(x=>x.ym===m).reduce((s,x)=>s+x.amount,0)})}
-  const inc=S.meta?.incomeMonthly||0, mx=Math.max(inc,...months.map(x=>x.v),1);
-  const active=appDebts().sort((a,b)=>lastYm(a)<lastYm(b)?-1:1);
-  const fam=family();
-  return `
-  <div class="lvcard"><div class="row"><div><div class="k">Cấp ${lv.i} · hành trình thoát nợ</div><div class="name">${esc(lv.name)}</div></div><div style="font-family:var(--f-disp);font-size:30px;font-weight:800">${Math.round(lv.p*100)}%</div></div>
+  const nx=ms.find(m=>m.next), nxi=ms.findIndex(m=>m.next), tab=S.jTab||'moc';
+  const doneN=ms.filter(m=>m.done).length;
+  const head=`
+  <button class="lvcard" ${sh('levels')}><div class="row"><div style="text-align:left"><div class="k">Cấp ${lv.i} / ${LEVELS.length}</div><div class="name">${esc(lv.name)}</div></div><div style="font-family:var(--f-disp);font-size:30px;font-weight:800">${Math.round(lv.p*100)}%</div></div>
     <div class="xp" role="progressbar" aria-valuenow="${Math.round(lv.p*100)}" aria-valuemin="0" aria-valuemax="100" aria-label="Tiến độ thoát nợ"><i style="width:${Math.max(2,lv.p*100)}%"></i></div>
-    <div class="ends"><span>Nợ ròng lúc đầu ${tr(lv.start)}</span><span>Còn ${tr(Math.max(0,lv.net))}</span></div>
-    <div style="font-size:13.5px;opacity:.9">${lv.next?`Lên cấp "${esc(lv.next)}" khi nợ ròng còn ${tr(lv.start*(1-lv.nextAt))}, tức bớt thêm ${tr(Math.max(0,lv.net-lv.start*(1-lv.nextAt)))}.`:'Bạn đã tự do!'} Nợ ròng = tổng nợ trừ tiền đang có và các quỹ.</div></div>
-  ${nx?`<div class="card" style="border-color:var(--gold)"><div class="lbl" style="color:var(--gold)">Mốc tiếp theo</div><h3 style="margin-top:2px">${esc(nx.t)}</h3><div class="note">${esc(nx.s)} · ${nx.est?'dự kiến ':''}${mName(nx.ym).toLowerCase()}</div></div>`:''}
-  <div class="card"><h3 style="margin-bottom:14px">Con đường về đích</h3><div class="road">${ms.map((m,i)=>`<div class="ms ${m.done?'done':''} ${m.next?'next':''}"><div class="dot">${m.done?'✓':i+1}</div><div><div class="t">${esc(m.t)}</div><div class="s">${esc(m.s)}</div></div><div class="when">${m.done?'Xong':(m.est?'~':'')+mShort(m.ym)}</div></div>`).join('')}</div></div>
-  <div class="card"><div class="row" style="margin-bottom:12px"><h3>Huy hiệu</h3><span class="note">${bs.filter(b=>b.on).length}/${bs.length} đã mở</span></div>
-    <div class="badges">${bs.map(b=>`<div class="badge ${b.on?'on':''}"><span class="em" aria-hidden="true">${b.em}</span><span class="n">${esc(b.n)}</span><span class="p">${b.on?'Đã đạt':esc(b.p)}</span></div>`).join('')}</div></div>
-  <div class="card"><h3>Gánh nợ nhẹ dần mỗi tháng</h3><div class="note" style="margin-bottom:10px">Tiền phải trả các app và thẻ. Vạch đứt là thu nhập ${tr(inc)}.</div>
-    <div class="chart">${months.map(x=>`<div class="crow ${x.m===ym?'now':''}"><span>${mShort(x.m)}</span><div class="track"><i style="width:${(x.v/mx*100).toFixed(1)}%"></i>${inc?`<span style="position:absolute;top:-2px;bottom:-2px;left:${(inc/mx*100).toFixed(1)}%;border-left:2px dashed var(--muted)"></span>`:''}</div><span class="v">${tr(x.v)}</span></div>`).join('')}</div></div>
-  <div class="card"><h3 style="margin-bottom:4px">Từng khoản nợ</h3><div class="list">${active.map(d=>{const sc=schedule(d),left=sc.filter(i=>!i.paid),r=left.reduce((s,i)=>s+i.amount,0);
-    return `<div class="item" style="display:block"><div class="row"><span class="t">${esc(d.name)}</span><span class="amt">${vnd(r)}</span></div><div class="s">${esc(d.app||'')}${d.rate?' · lãi '+esc(d.rate):''} · còn ${left.length} kỳ${left.length?', xong '+mShort(sc[sc.length-1].ym):''}</div><div class="prog">${sc.map(i=>`<i class="${i.paid?'p':''}"></i>`).join('')}</div></div>`}).join('')}
-    ${fam?`<div class="item" style="display:block"><div class="row"><span class="t">${esc(fam.name)}</span><span class="amt">${vnd(remainingOf(fam))}</span></div><div class="s">Không lãi. Ghi giao dịch "Trả cậu mợ" để trừ dần.</div></div>`:''}</div></div>`;
+    <div class="ends"><span>Nợ ròng còn ${tr(Math.max(0,lv.net))}</span><span>${lv.next?'Cấp sau: bớt '+tr(Math.max(0,lv.net-lv.start*(1-lv.nextAt))):'Tự do!'}</span></div>
+    <div class="more">Xem các cấp độ ›</div></button>
+  ${nx?`<button class="card nextms" ${sh('ms',nxi)}><div class="lbl" style="color:var(--gold)">Mốc tiếp theo · ${nx.est?'dự kiến ':''}${mShort(nx.ym)}</div><div class="row"><h3 style="text-align:left">${esc(nx.t)}</h3><span class="chev">›</span></div><div class="note" style="text-align:left">${esc(nx.s)}</div></button>`:''}
+  <div class="seg jtabs" role="tablist">${[['moc','Mốc',doneN+'/'+ms.length],['huy','Huy hiệu',bs.filter(b=>b.on).length+'/'+bs.length],['no','Khoản nợ',appDebts().filter(d=>remainingOf(d)>0).length],['bd','Gánh nợ','']].map(([id,n,c])=>`<button role="tab" aria-selected="${tab===id}" class="${tab===id?'on':''}" data-jtab="${id}">${n}${c!==''?` <small>${c}</small>`:''}</button>`).join('')}</div>`;
+  let body='';
+  if(tab==='moc') body=`<div class="card"><div class="road">${ms.map((m,i)=>`<button class="ms ${m.done?'done':''} ${m.next?'next':''}" ${sh('ms',i)}><div class="dot">${m.done?'✓':i+1}</div><div style="text-align:left;min-width:0"><div class="t">${esc(m.t)}</div><div class="s">${esc(m.s)}</div></div><div class="when">${m.done?'Xong':(m.est?'~':'')+mShort(m.ym)} ›</div></button>`).join('')}</div></div>`;
+  else if(tab==='huy') body=`<div class="badges">${bs.map((b,i)=>`<button class="badge ${b.on?'on':''}" ${sh('badge',i)}><span class="em" aria-hidden="true">${b.em}</span><span class="n">${esc(b.n)}</span><span class="p">${b.on?'Đã đạt':bval(b,b.cur)+'/'+bval(b,b.target)}</span><span class="mini"><i style="width:${Math.min(100,b.cur/b.target*100)}%"></i></span></button>`).join('')}</div><p class="note" style="text-align:center;margin:0">Chạm vào huy hiệu để xem cách mở khóa.</p>`;
+  else if(tab==='no'){const active=appDebts().filter(d=>remainingOf(d)>0).sort((a,b)=>lastYm(a)<lastYm(b)?-1:1), fam=family(), done=appDebts().filter(d=>remainingOf(d)===0).concat(S.debts.filter(d=>d.closed));
+    body=`<div class="card"><div class="list">${active.map(d=>{const sc=schedule(d),left=sc.filter(i=>!i.paid),r=left.reduce((s,i)=>s+i.amount,0);
+      return `<button class="item rowbtn" ${sh('debt',d.id)} style="display:block"><div class="row"><span class="t">${esc(d.name)}</span><span class="amt">${vnd(r)} ›</span></div><div class="s">${d.rate?'Lãi '+esc(d.rate)+' · ':''}còn ${left.length} kỳ${left.length?', xong '+mShort(sc[sc.length-1].ym):''}</div><div class="prog">${sc.length<=36?sc.map(i=>`<i class="${i.paid?'p':''}"></i>`).join(''):''}</div></button>`}).join('')}
+      ${fam?`<button class="item rowbtn" ${sh('debt',fam.id)} style="display:block"><div class="row"><span class="t">${esc(fam.name)}</span><span class="amt">${vnd(remainingOf(fam))} ›</span></div><div class="s">Không lãi</div></button>`:''}</div></div>
+      ${done.length?`<details class="card fold"><summary><h3>Đã xong (${done.length})</h3></summary><div class="list">${done.map(d=>`<div class="item"><span class="dot ok">✓</span><div class="main"><div class="t">${esc(d.name)}</div><div class="s">${esc(d.note||'')}</div></div></div>`).join('')}</div></details>`:''}`}
+  else {const months=[];for(let i=0;i<12;i++){const m=addYm(ym,i);months.push({m,v:all.filter(x=>x.ym===m).reduce((s,x)=>s+x.amount,0)})}
+    const inc=S.meta?.incomeMonthly||0, mx=Math.max(inc,...months.map(x=>x.v),1);
+    body=`<div class="card"><div class="note" style="margin-bottom:10px">Tiền phải trả các app và thẻ mỗi tháng. Vạch đứt là thu nhập ${tr(inc)}. Chạm từng tháng để xem chi tiết.</div>
+    <div class="chart">${months.map(x=>`<button class="crow ${x.m===ym?'now':''}" ${sh('month',x.m)}><span>${mShort(x.m)}</span><div class="track"><i style="width:${(x.v/mx*100).toFixed(1)}%"></i>${inc?`<span style="position:absolute;top:-2px;bottom:-2px;left:${(inc/mx*100).toFixed(1)}%;border-left:2px dashed var(--muted)"></span>`:''}</div><span class="v">${tr(x.v)}</span></button>`).join('')}</div></div>`}
+  return head+body;
 }
 
 function vSchedule(){
@@ -511,9 +681,9 @@ function vBudget(){
     <div class="bline"><label class="nm" for="b-income">Thu nhập sẽ nhận</label>${canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-income" data-bt="income" value="${Math.round(b.income||0)}">`:`<span class="amt">${vnd(b.income)}</span>`}<span class="sp">Đã nhận: ${vnd(inc)}</span></div>
   </div></div>
   <div class="card"><div class="row"><h3>Giao việc</h3>${canWrite&&Math.abs(bc.left)>=1000?`<button class="sm" data-fill="${ym}">Cân bằng bằng Dự phòng</button>`:''}</div><div class="list">
-    <div class="bline"><span class="nm">Trả nợ app, thẻ</span><span class="amt">${vnd(bc.debtPlan)}</span><span class="sp">Tự tính từ lịch · đã trả ${vnd(debtPaid)}<div class="bar"><i style="width:${bc.debtPlan?Math.min(100,debtPaid/bc.debtPlan*100):0}%"></i></div></span></div>
+    <div class="bline"><button class="nm linkish" ${sh('month',ym)}>Trả nợ app, thẻ ›</button><span class="amt">${vnd(bc.debtPlan)}</span><span class="sp">Tự tính từ lịch · đã trả ${vnd(debtPaid)}<div class="bar"><i style="width:${bc.debtPlan?Math.min(100,debtPaid/bc.debtPlan*100):0}%"></i></div></span></div>
     ${keys.map(id=>{const pl=Number(lines[id])||0, s=id==='duphong'?0:spent(ym,id), pct=pl?s/pl*100:(s?100:0);
-      return `<div class="bline"><label class="nm" for="b-${id}">${esc(catName(id))}</label>${moneyIn(id,pl)}<span class="sp">${id==='duphong'?'Không tiêu. Để bù tháng thiếu.':'Đã chi '+vnd(s)+(pl?' · còn '+vnd(pl-s):'')}${id==='duphong'?'':`<div class="bar"><i class="${s>pl?'over':''}" style="width:${Math.min(100,pct)}%"></i></div>`}</span></div>`}).join('')}
+      return `<div class="bline">${id==='duphong'||id.startsWith('f_')?`<label class="nm" for="b-${id}">${esc(catName(id))}</label>`:`<button class="nm linkish" ${sh('cat',ym+'|'+id)}>${esc(catName(id))} ›</button>`}${moneyIn(id,pl)}<span class="sp">${id==='duphong'?'Không tiêu. Để bù tháng thiếu.':'Đã chi '+vnd(s)+(pl?' · còn '+vnd(pl-s):'')}${id==='duphong'?'':`<div class="bar"><i class="${s>pl?'over':''}" style="width:${Math.min(100,pct)}%"></i></div>`}</span></div>`}).join('')}
   </div></div>
   <div class="card"><h3>Các hũ cho khoản lớn</h3><div class="list">${S.funds.length?S.funds.map(f=>{const s=fundSaved(f),pct=f.target?Math.min(100,s/f.target*100):0;
     const now=new Date(), mLeft=f.due?Math.max(1,(Number(f.due.slice(0,4))-now.getFullYear())*12+Number(f.due.slice(5,7))-(now.getMonth()+1)+1):0;
@@ -560,6 +730,8 @@ function render(){
   for(const id in keep){const e=document.getElementById(id);if(e&&keep[id]!=='')e.value=keep[id]}
   const wi=document.getElementById('wImpact'); if(wi) wi.innerHTML=impactHtml();
   if(aid){const e=document.getElementById(aid);if(e){e.focus();try{sel&&e.setSelectionRange(sel[0],sel[1])}catch{}}}
+  ROW_COMPACT=false;
+  if(S.sheet)renderSheet(false);
 }
 function show(v){
   if(!['hom-nay','hanh-trinh','lich-tra','ngan-sach','ghi-chep'].includes(v)) v='hom-nay';
@@ -567,7 +739,8 @@ function show(v){
   document.querySelectorAll('nav.tabs a').forEach(a=>{a.classList.toggle('on',a.dataset.v===v);if(a.dataset.v===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   render(); window.scrollTo(0,0);
 }
-window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+window.addEventListener('hashchange',()=>{closeSheet();show(location.hash.slice(1))});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.sheet)closeSheet()});
 
 document.addEventListener('click',e=>{if(e.target.closest('[data-import]'))document.getElementById('importFile').click()});
 document.addEventListener('change',async e=>{if(e.target.id!=='importFile'||!e.target.files[0])return;
@@ -575,7 +748,10 @@ document.addEventListener('change',async e=>{if(e.target.id!=='importFile'||!e.t
     if(!r.ok)throw 0;const o=await r.json();await db.refresh();toast('Đã nhập '+o.imported+' mục.')}catch{toast('File không đúng định dạng sao lưu.')}e.target.value=''});
 document.addEventListener('input',e=>{if(e.target.id==='wPrice'){const wi=document.getElementById('wImpact');if(wi)wi.innerHTML=impactHtml()}});
 document.addEventListener('click',async e=>{
+  if(e.target.closest('[data-close]')){closeSheet();return}
+  const sb=e.target.closest('[data-sheet]'); if(sb){openSheet(sb.dataset.sheet,sb.dataset.arg);return}
   const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.jtab){S.jTab=b.dataset.jtab;return render()}
   const d=b.dataset;
   if(d.pay) return togglePay(d.pay);
   if(d.q!=null){const q=(S.meta?.quick||QUICK_DEFAULT)[Number(d.q)];if(q)addTx({date:todayS(),amount:q.amount,dir:'out',cat:q.cat,note:q.label,src:'app'},'Đã ghi '+q.label+' '+k(q.amount));return}
