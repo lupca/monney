@@ -300,6 +300,8 @@ const QUICK_DEFAULT=[{label:'Bánh mì',amount:35000,cat:'an'},{label:'Cơm gà'
 const LEVELS=[[0,'Tân binh thoát nợ'],[.1,'Người cắt lãi'],[.25,'Chiến binh trả góp'],[.5,'Nửa đường tự do'],[.75,'Sắp về đích'],[1,'Tự do tài chính']];
 const p2=n=>String(n).padStart(2,'0');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtIn=n=>{n=Math.round(Number(n)||0);return n?n.toLocaleString('vi-VN'):'0'};
+const parseMoney=v=>Math.round(Number(String(v||'').replace(/[^\d]/g,''))||0);
 const vnd=n=>Math.round(n||0).toLocaleString('vi-VN')+'đ';
 const k=n=>{const a=Math.abs(n||0);return (n<0?'−':'')+(a>=1e6?(Math.round(a/1e5)/10).toLocaleString('vi-VN')+'tr':Math.round(a/1000)+'k')};
 const tr=n=>{const v=(n||0)/1e6;const r=Math.abs(v)>=100?Math.round(v):Math.round(v*10)/10;return r.toLocaleString('vi-VN')+'tr'};
@@ -588,7 +590,7 @@ function vToday(){
 function vWish(){
   const waiting=S.wishes.filter(x=>x.status==='waiting');
   return `<div class="wish"><div><h3>Muốn mua gì à?</h3><div class="note" style="color:inherit;opacity:.8">Nhập vào đây trước khi bấm mua. Xem nó đáng bao nhiêu công sức đã.</div></div>
-  ${canWrite?`<div class="two"><input type="text" id="wName" placeholder="Món gì?" maxlength="40"><input type="number" inputmode="numeric" id="wPrice" placeholder="Giá" step="1000" min="0"></div>
+  ${canWrite?`<div class="two"><input type="text" id="wName" placeholder="Món gì?" maxlength="40"><input type="text" inputmode="numeric" autocomplete="off" class="moneyin" id="wPrice" placeholder="Giá"></div>
   <div class="impact" id="wImpact">${impactHtml()}</div>
   <div class="btns"><button class="goldb" data-wish="skip">Thôi, bỏ vào hũ</button><button data-wish="wait">Để 24 giờ nghĩ đã</button></div>`:''}
   ${waiting.length?`<div class="wl">${waiting.map(x=>{const h=Math.max(0,24-(Date.now()-new Date(x.createdAt))/36e5);
@@ -596,7 +598,7 @@ function vWish(){
   </div>`;
 }
 function impactHtml(){
-  const pEl=document.getElementById('wPrice'); const price=pEl?Math.round(Number(pEl.value)||0):0;
+  const pEl=document.getElementById('wPrice'); const price=pEl?parseMoney(pEl.value):0;
   if(!price) return '<div class="note" style="color:inherit;opacity:.75">Gõ giá vào để xem quy đổi.</div>';
   const food=115000, hours=price/hourly(), cakeK=3733362;
   return `<div><b>${(price/food).toLocaleString('vi-VN',{maximumFractionDigits:1})}</b><span>ngày ăn uống của bạn</span></div>
@@ -669,7 +671,7 @@ function vBudget(){
   const segs=[[bc.debtPlan,'var(--bad)','Trả nợ'],[flexT,'var(--accent)','Tiêu hằng ngày'],[other,'var(--muted)','Cố định, khác'],[save,'var(--gold)','Để dành']];
   const tot=Math.max(1,bc.avail);
   const a=allowance(ym);
-  const moneyIn=(id,val)=>canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-${id}" data-bl="${id}" value="${Math.round(val||0)}">`:`<span class="amt">${vnd(val)}</span>`;
+  const moneyIn=(id,val)=>canWrite?`<input class="money" type="text" inputmode="numeric" autocomplete="off" id="b-${id}" data-bl="${id}" value="${fmtIn(val)}">`:`<span class="amt">${vnd(val)}</span>`;
   return nav+zeroBox(bc,ym)+`
   <div class="card"><div class="row"><h3>Tiền tháng này đi đâu</h3><span class="amt">${vnd(bc.avail)}</span></div>
     <div class="stack">${segs.map(s=>`<i style="width:${(Math.max(0,s[0])/tot*100).toFixed(1)}%;background:${s[1]}"></i>`).join('')}</div>
@@ -677,18 +679,18 @@ function vBudget(){
     ${a!=null?`<p class="note" style="margin:10px 0 0">Ăn uống và tiêu thoải mái chia đều ra mỗi ngày là <b>${vnd(a)}</b>. Đó là con số ở vòng tròn "Hôm nay". Xăng xe, điện thoại, hiếu hỉ không tính vào mức ngày vì mấy hôm mới chi một lần; theo dõi chúng ở các dòng bên dưới.</p>`:''}</div>
   ${explain}
   <div class="card"><h3>Tiền có</h3><div class="list">
-    <div class="bline"><label class="nm" for="b-start">Mang sang</label>${canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-start" data-bt="start" value="${Math.round(b.start||0)}">`:`<span class="amt">${vnd(b.start)}</span>`}<span class="sp">Tiền đang có lúc lập, hoặc Dự phòng tháng trước.</span></div>
-    <div class="bline"><label class="nm" for="b-income">Thu nhập sẽ nhận</label>${canWrite?`<input class="money" type="number" inputmode="numeric" step="1000" id="b-income" data-bt="income" value="${Math.round(b.income||0)}">`:`<span class="amt">${vnd(b.income)}</span>`}<span class="sp">Đã nhận: ${vnd(inc)}</span></div>
+    <div class="bline"><label class="nm" for="b-start">Mang sang</label>${canWrite?`<input class="money" type="text" inputmode="numeric" autocomplete="off" id="b-start" data-bt="start" value="${fmtIn(b.start)}">`:`<span class="amt">${vnd(b.start)}</span>`}<span class="sp">Tiền đang có lúc lập, hoặc Dự phòng tháng trước.</span></div>
+    <div class="bline"><label class="nm" for="b-income">Thu nhập sẽ nhận</label>${canWrite?`<input class="money" type="text" inputmode="numeric" autocomplete="off" id="b-income" data-bt="income" value="${fmtIn(b.income)}">`:`<span class="amt">${vnd(b.income)}</span>`}<span class="sp">Đã nhận: ${vnd(inc)}</span></div>
   </div></div>
   <div class="card"><div class="row"><h3>Giao việc</h3>${canWrite&&Math.abs(bc.left)>=1000?`<button class="sm" data-fill="${ym}">Cân bằng bằng Dự phòng</button>`:''}</div><div class="list">
     <div class="bline"><button class="nm linkish" ${sh('month',ym)}>Trả nợ app, thẻ ›</button><span class="amt">${vnd(bc.debtPlan)}</span><span class="sp">Tự tính từ lịch · đã trả ${vnd(debtPaid)}<div class="bar"><i style="width:${bc.debtPlan?Math.min(100,debtPaid/bc.debtPlan*100):0}%"></i></div></span></div>
     ${keys.map(id=>{const pl=Number(lines[id])||0, s=id==='duphong'?0:spent(ym,id), pct=pl?s/pl*100:(s?100:0);
-      return `<div class="bline">${id==='duphong'||id.startsWith('f_')?`<label class="nm" for="b-${id}">${esc(catName(id))}</label>`:`<button class="nm linkish" ${sh('cat',ym+'|'+id)}>${esc(catName(id))} ›</button>`}${moneyIn(id,pl)}<span class="sp"><b style="color:var(--ink)">${vnd(pl)}</b> · ${id==='duphong'?'Không tiêu. Để bù tháng thiếu.':'Đã chi '+vnd(s)+(pl?' · còn '+vnd(pl-s):'')}${id==='duphong'?'':`<div class="bar"><i class="${s>pl?'over':''}" style="width:${Math.min(100,pct)}%"></i></div>`}</span></div>`}).join('')}
+      return `<div class="bline">${id==='duphong'||id.startsWith('f_')?`<label class="nm" for="b-${id}">${esc(catName(id))}</label>`:`<button class="nm linkish" ${sh('cat',ym+'|'+id)}>${esc(catName(id))} ›</button>`}${moneyIn(id,pl)}<span class="sp">${id==='duphong'?'Không tiêu. Để bù tháng thiếu.':'Đã chi '+vnd(s)+(pl?' · còn '+vnd(pl-s):'')}${id==='duphong'?'':`<div class="bar"><i class="${s>pl?'over':''}" style="width:${Math.min(100,pct)}%"></i></div>`}</span></div>`}).join('')}
   </div></div>
   <div class="card"><h3>Các hũ cho khoản lớn</h3><div class="list">${S.funds.length?S.funds.map(f=>{const s=fundSaved(f),pct=f.target?Math.min(100,s/f.target*100):0;
     const now=new Date(), mLeft=f.due?Math.max(1,(Number(f.due.slice(0,4))-now.getFullYear())*12+Number(f.due.slice(5,7))-(now.getMonth()+1)+1):0;
     return `<div class="item" style="display:block"><div class="row"><span class="t">${esc(f.name)}</span><span class="amt">${k(s)} / ${k(f.target)}</span></div><div class="s">${f.target>s&&mLeft?'Bỏ vào '+vnd((f.target-s)/mLeft)+'/tháng là kịp':'Đã đủ'}${f.note?' · '+esc(f.note):''}</div><div class="bar"><i style="width:${pct}%;background:var(--gold)"></i></div></div>`}).join(''):'<div class="empty">Chưa có hũ nào.</div>'}</div>
-    ${canWrite?`<form class="f" id="fundForm" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px"><input type="text" id="fName" placeholder="Tên hũ, ví dụ Sửa xe" required maxlength="40"><div class="two"><input type="number" inputmode="numeric" id="fTarget" placeholder="Cần bao nhiêu" step="100000" min="0" required><input type="text" id="fDue" placeholder="Hạn (VD 2027-03)" pattern="\\d{4}-\\d{2}"></div><button type="submit">Thêm hũ</button><p class="note" style="margin:0">Bỏ tiền vào hũ: ghi giao dịch mục "Quỹ ..." ở Ghi chép.</p></form>`:''}</div>`;
+    ${canWrite?`<form class="f" id="fundForm" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px"><input type="text" id="fName" placeholder="Tên hũ, ví dụ Sửa xe" required maxlength="40"><div class="two"><input type="text" inputmode="numeric" autocomplete="off" class="moneyin" id="fTarget" placeholder="Cần bao nhiêu" required><input type="text" id="fDue" placeholder="Hạn (VD 2027-03)" pattern="\\d{4}-\\d{2}"></div><button type="submit">Thêm hũ</button><p class="note" style="margin:0">Bỏ tiền vào hũ: ghi giao dịch mục "Quỹ ..." ở Ghi chép.</p></form>`:''}</div>`;
 }
 
 function vTx(){
@@ -699,7 +701,7 @@ function vTx(){
   const done=S.wishes.filter(x=>x.status!=='waiting').sort((a,b)=>(b.decidedAt||'')<(a.decidedAt||'')?-1:1).slice(0,8);
   return `${canWrite?`<div class="card"><h3 style="margin-bottom:10px">Ghi giao dịch</h3><form class="f" id="txForm">
     <div class="seg" role="group" aria-label="Loại"><button type="button" data-dir="out" class="${S.txDir==='out'?'on':''}">Chi ra</button><button type="button" data-dir="in" class="${S.txDir==='in'?'on':''}">Tiền vào</button></div>
-    <div class="two"><input type="number" inputmode="numeric" id="txAmt" placeholder="Số tiền" step="1000" min="0" required><input type="date" id="txDate" value="${todayS()}" required></div>
+    <div class="two"><input type="text" inputmode="numeric" autocomplete="off" class="moneyin" id="txAmt" placeholder="Số tiền" required><input type="date" id="txDate" value="${todayS()}" required></div>
     <select id="txCat" aria-label="Mục">${cats.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
     <input type="text" id="txNote" placeholder="Ghi chú (không bắt buộc)" maxlength="80">
     <button class="pri" type="submit">Lưu</button>
@@ -746,6 +748,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-import]'))docum
 document.addEventListener('change',async e=>{if(e.target.id!=='importFile'||!e.target.files[0])return;
   try{const j=JSON.parse(await e.target.files[0].text());const r=await fetch('/api/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(j)});
     if(!r.ok)throw 0;const o=await r.json();await db.refresh();toast('Đã nhập '+o.imported+' mục.')}catch{toast('File không đúng định dạng sao lưu.')}e.target.value=''});
+document.addEventListener('input',e=>{const el=e.target;if(el.matches&&el.matches('input.money,input.moneyin')){const dg=el.value.replace(/[^\d]/g,'');const f=dg?Number(dg).toLocaleString('vi-VN'):'';if(f!==el.value){el.value=f;try{el.setSelectionRange(f.length,f.length)}catch{}}}})
 document.addEventListener('input',e=>{if(e.target.id==='wPrice'){const wi=document.getElementById('wImpact');if(wi)wi.innerHTML=impactHtml()}});
 document.addEventListener('click',async e=>{
   if(e.target.closest('[data-close]')){closeSheet();return}
@@ -755,7 +758,7 @@ document.addEventListener('click',async e=>{
   const d=b.dataset;
   if(d.pay) return togglePay(d.pay);
   if(d.q!=null){const q=(S.meta?.quick||QUICK_DEFAULT)[Number(d.q)];if(q)addTx({date:todayS(),amount:q.amount,dir:'out',cat:q.cat,note:q.label,src:'app'},'Đã ghi '+q.label+' '+k(q.amount));return}
-  if(d.wish){const n=document.getElementById('wName').value.trim()||'Món chưa đặt tên', pr=Math.round(Number(document.getElementById('wPrice').value)||0);
+  if(d.wish){const n=document.getElementById('wName').value.trim()||'Món chưa đặt tên', pr=parseMoney(document.getElementById('wPrice').value);
     if(!pr) return toast('Nhập giá trước đã.');
     const now=new Date().toISOString();
     const ok=await w(()=>db.collection('wishes').add(d.wish==='skip'?{name:n,price:pr,status:'skipped',createdAt:now,decidedAt:now}:{name:n,price:pr,status:'waiting',createdAt:now}));
@@ -777,19 +780,19 @@ document.addEventListener('click',async e=>{
     await w(()=>db.doc('budgets/'+d.fill).update({lines:{duphong:Math.round(nv)}}));return}
 });
 document.addEventListener('change',async e=>{
-  const t=e.target, d=t.dataset; const v=Math.max(0,Math.round(Number(t.value)||0));
+  const t=e.target, d=t.dataset; const v=parseMoney(t.value);
   if(d.bl){await w(()=>db.doc('budgets/'+S.bYm).update({lines:{[d.bl]:v}}))}
   else if(d.bt){await w(()=>db.doc('budgets/'+S.bYm).update({[d.bt]:v}))}
 });
 document.addEventListener('submit',async e=>{
   e.preventDefault();
   if(e.target.id==='txForm'){
-    const amt=Math.round(Number(document.getElementById('txAmt').value)||0); if(amt<=0) return toast('Nhập số tiền trước đã.');
+    const amt=parseMoney(document.getElementById('txAmt').value); if(amt<=0) return toast('Nhập số tiền trước đã.');
     await addTx({date:document.getElementById('txDate').value||todayS(),amount:amt,dir:S.txDir,cat:document.getElementById('txCat').value,note:document.getElementById('txNote').value.trim(),src:'app'},'Đã lưu '+vnd(amt));
     ['txAmt','txNote'].forEach(id=>{const x=document.getElementById(id);if(x)x.value=''});
   }
   if(e.target.id==='fundForm'){
-    const name=document.getElementById('fName').value.trim(), target=Math.round(Number(document.getElementById('fTarget').value)||0), due=document.getElementById('fDue').value.trim();
+    const name=document.getElementById('fName').value.trim(), target=parseMoney(document.getElementById('fTarget').value), due=document.getElementById('fDue').value.trim();
     if(!name||!target) return;
     if(await w(()=>db.collection('funds').add({name,target,due,saved:0,note:''}))){['fName','fTarget','fDue'].forEach(id=>{const x=document.getElementById(id);if(x)x.value=''});toast('Đã thêm hũ '+name)}
   }
