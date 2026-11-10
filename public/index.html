@@ -292,7 +292,7 @@ details.fold[open] summary{margin-bottom:6px}
 const CATS=[
   {id:'nha',name:'Tiền nhà'},{id:'an',name:'Ăn uống'},{id:'dilai',name:'Đi lại, xăng xe'},
   {id:'dt',name:'Điện thoại, mạng'},{id:'congviec',name:'Công cụ làm việc'},{id:'choi',name:'Tiêu thoải mái'},
-  {id:'khac',name:'Linh tinh, hiếu hỉ'},{id:'caumo',name:'Trả cậu mợ'},{id:'duphong',name:'Dự phòng (để dành)'}
+  {id:'khac',name:'Linh tinh, hiếu hỉ'},{id:'caumo',name:'Trả cậu mợ'},{id:'tranguoi',name:'Trả nợ người quen'},{id:'duphong',name:'Dự phòng (để dành)'}
 ];
 const INCATS=[{id:'luong',name:'Lương'},{id:'lamthem',name:'Làm thêm'},{id:'khac_in',name:'Thu khác'}];
 const FLEX=['an','choi'];
@@ -335,7 +335,7 @@ function schedule(d){
 }
 const items=()=>S.debts.flatMap(schedule).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
 const remainingOf=d=>{
-  if(d.kind==='family'){const back=S.txns.filter(t=>t.dir==='out'&&t.cat==='caumo').reduce((s,t)=>s+t.amount,0);return Math.max(0,(d.remaining||0)-back)}
+  if(d.kind==='family'){const rc=d.repayCat||'caumo';const back=S.txns.filter(t=>t.dir==='out'&&t.cat===rc).reduce((s,t)=>s+t.amount,0);return Math.max(0,(d.remaining||0)-back)}
   return schedule(d).filter(i=>!i.paid).reduce((s,i)=>s+i.amount,0);
 };
 const lastYm=d=>d.last||'';
@@ -351,7 +351,7 @@ const fundsTotal=()=>S.funds.reduce((s,f)=>s+fundSaved(f),0);
 const appDebts=()=>S.debts.filter(d=>!d.closed&&d.kind!=='family');
 const family=()=>S.debts.find(d=>d.kind==='family');
 function netDebt(){
-  const a=appDebts().reduce((s,d)=>s+remainingOf(d),0), f=family()?remainingOf(family()):0, c=cash()||0;
+  const a=appDebts().reduce((s,d)=>s+remainingOf(d),0), f=S.debts.filter(d=>d.kind==='family').reduce((s,d)=>s+remainingOf(d),0), c=cash()||0;
   return a+f-c-fundsTotal();
 }
 function level(){
@@ -526,9 +526,9 @@ function sheetBadge(i){
 }
 function sheetDebt(id){
   const d=S.debts.find(x=>x.id===id); if(!d) return {title:'Khoản nợ',body:''};
-  if(d.kind==='family'){const back=S.txns.filter(t=>t.dir==='out'&&t.cat==='caumo');
-    return {title:d.name,body:`<div class="sheet-big">${vnd(remainingOf(d))}</div><p class="note">${esc(d.note||'')} Không lãi.</p>
-      <h4>Đã trả</h4><div class="list">${back.length?back.map(txRow).join(''):'<div class="empty sm">Chưa trả lần nào. Ghi giao dịch mục "Trả cậu mợ" để trừ dần.</div>'}</div>`}}
+  if(d.kind==='family'){const rc=d.repayCat||'caumo';const back=S.txns.filter(t=>t.dir==='out'&&t.cat===rc);
+    return {title:d.name,body:`<div class="sheet-big">${vnd(remainingOf(d))}</div><p class="note">${esc(d.note||'')} ${esc(d.rate||'Không lãi.')}</p>
+      <h4>Đã trả</h4><div class="list">${back.length?back.map(txRow).join(''):'<div class="empty sm">Chưa trả lần nào. Ghi giao dịch mục "${esc(catName(rc))}" để trừ dần.</div>'}</div>`}}
   const sc=schedule(d), left=sc.filter(i=>!i.paid), r=left.reduce((s,i)=>s+i.amount,0);
   return {title:d.name,body:`<div class="sheet-big">${vnd(r)}</div><div class="prog" style="margin:0 0 12px">${sc.map(i=>`<i class="${i.paid?'p':''}"></i>`).join('')}</div>
     <div class="kvs">${kv('Bên cho vay',esc(d.app||'—'))}${d.rate?kv('Lãi',esc(d.rate)):''}${kv('Mỗi kỳ',vnd(d.monthly)+' · ngày '+d.day)}${kv('Còn lại',left.length+' / '+sc.length+' kỳ')}${sc.length?kv('Kỳ cuối',mName(sc[sc.length-1].ym).toLowerCase()):''}</div>
@@ -628,10 +628,10 @@ function vJourney(){
   let body='';
   if(tab==='moc') body=`<div class="card"><div class="road">${ms.map((m,i)=>`<button class="ms ${m.done?'done':''} ${m.next?'next':''}" ${sh('ms',i)}><div class="dot">${m.done?'✓':i+1}</div><div style="text-align:left;min-width:0"><div class="t">${esc(m.t)}</div><div class="s">${esc(m.s)}</div></div><div class="when">${m.done?'Xong':(m.est?'~':'')+mShort(m.ym)} ›</div></button>`).join('')}</div></div>`;
   else if(tab==='huy') body=`<div class="badges">${bs.map((b,i)=>`<button class="badge ${b.on?'on':''}" ${sh('badge',i)}><span class="em" aria-hidden="true">${b.em}</span><span class="n">${esc(b.n)}</span><span class="p">${b.on?'Đã đạt':bval(b,b.cur)+'/'+bval(b,b.target)}</span><span class="mini"><i style="width:${Math.min(100,b.cur/b.target*100)}%"></i></span></button>`).join('')}</div><p class="note" style="text-align:center;margin:0">Chạm vào huy hiệu để xem cách mở khóa.</p>`;
-  else if(tab==='no'){const active=appDebts().filter(d=>remainingOf(d)>0).sort((a,b)=>lastYm(a)<lastYm(b)?-1:1), fam=family(), done=appDebts().filter(d=>remainingOf(d)===0).concat(S.debts.filter(d=>d.closed));
+  else if(tab==='no'){const active=appDebts().filter(d=>remainingOf(d)>0).sort((a,b)=>lastYm(a)<lastYm(b)?-1:1), fams=S.debts.filter(d=>d.kind==='family'), done=appDebts().filter(d=>remainingOf(d)===0).concat(S.debts.filter(d=>d.closed));
     body=`<div class="card"><div class="list">${active.map(d=>{const sc=schedule(d),left=sc.filter(i=>!i.paid),r=left.reduce((s,i)=>s+i.amount,0);
       return `<button class="item rowbtn" ${sh('debt',d.id)} style="display:block"><div class="row"><span class="t">${esc(d.name)}</span><span class="amt">${vnd(r)} ›</span></div><div class="s">${d.rate?'Lãi '+esc(d.rate)+' · ':''}còn ${left.length} kỳ${left.length?', xong '+mShort(sc[sc.length-1].ym):''}</div><div class="prog">${sc.length<=36?sc.map(i=>`<i class="${i.paid?'p':''}"></i>`).join(''):''}</div></button>`}).join('')}
-      ${fam?`<button class="item rowbtn" ${sh('debt',fam.id)} style="display:block"><div class="row"><span class="t">${esc(fam.name)}</span><span class="amt">${vnd(remainingOf(fam))} ›</span></div><div class="s">Không lãi</div></button>`:''}</div></div>
+      ${fams.map(fam=>`<button class="item rowbtn" ${sh('debt',fam.id)} style="display:block"><div class="row"><span class="t">${esc(fam.name)}</span><span class="amt">${vnd(remainingOf(fam))} ›</span></div><div class="s">${esc(fam.rate||'Không lãi')}</div></button>`).join('')}</div></div>
       ${done.length?`<details class="card fold"><summary><h3>Đã xong (${done.length})</h3></summary><div class="list">${done.map(d=>`<div class="item"><span class="dot ok">✓</span><div class="main"><div class="t">${esc(d.name)}</div><div class="s">${esc(d.note||'')}</div></div></div>`).join('')}</div></details>`:''}`}
   else {const months=[];for(let i=0;i<12;i++){const m=addYm(ym,i);months.push({m,v:all.filter(x=>x.ym===m).reduce((s,x)=>s+x.amount,0)})}
     const inc=S.meta?.incomeMonthly||0, mx=Math.max(inc,...months.map(x=>x.v),1);
